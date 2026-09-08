@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Ocean Wonders — Interactive App Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      /* Theme: Ocean Dark (default) */
+      --bg-gradient: radial-gradient(circle at 50% 20%, #0d2857 0%, #061533 50%, #030a1c 100%);
+      --grid-color: rgba(64, 150, 255, 0.07);
+      --toolbar-bg: rgba(10, 25, 55, 0.75);
+      --toolbar-border: rgba(94, 212, 255, 0.2);
+      --toolbar-shadow: 0 16px 36px rgba(0, 8, 24, 0.6);
+      --text-main: #f0f7ff;
+      --text-muted: #8bb3e6;
+      --accent: #2eb8f0;
+      --accent-glow: rgba(46, 184, 240, 0.35);
+      --accent-gradient: linear-gradient(135deg, #5ed4ff 0%, #2eb8f0 50%, #1a8fd4 100%);
+      --btn-bg: rgba(255, 255, 255, 0.08);
+      --btn-hover: rgba(255, 255, 255, 0.16);
+      --btn-border: rgba(255, 255, 255, 0.14);
+      --frame-titanium: #16181d;
+      --frame-bezel: #0a0b0d;
+      --frame-border: #35383f;
+      --frame-glow: rgba(0, 0, 0, 0.7);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #e2eeff 0%, #c9e0ff 50%, #b3d2fa 100%);
+      --grid-color: rgba(14, 86, 179, 0.09);
+      --toolbar-bg: rgba(255, 255, 255, 0.82);
+      --toolbar-border: rgba(14, 90, 180, 0.18);
+      --toolbar-shadow: 0 16px 36px rgba(10, 40, 90, 0.12);
+      --text-main: #061c3d;
+      --text-muted: #3a6094;
+      --btn-bg: rgba(0, 30, 80, 0.06);
+      --btn-hover: rgba(0, 30, 80, 0.12);
+      --btn-border: rgba(0, 30, 80, 0.12);
+      --frame-titanium: #d5d8de;
+      --frame-bezel: #1b1c1f;
+      --frame-border: #9ba1ad;
+      --frame-glow: rgba(0, 20, 60, 0.2);
+    }
+
+    [data-theme="blueprint"] {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #0b1f3d 0%, #071326 60%, #030a14 100%);
+      --grid-color: rgba(0, 229, 255, 0.12);
+      --toolbar-bg: rgba(6, 20, 40, 0.85);
+      --toolbar-border: rgba(0, 229, 255, 0.3);
+      --toolbar-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+      --text-main: #e0f7ff;
+      --text-muted: #64b5f6;
+      --accent: #00e5ff;
+      --accent-glow: rgba(0, 229, 255, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    *::-webkit-scrollbar {
+      width: 0 !important;
+      height: 0 !important;
+      display: none !important;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: var(--font-main);
+      background: #030a1c;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    /* Full-viewport canvas */
+    .viewport-canvas {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-gradient);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Grid background lines */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 36px 36px;
+      background-position: center center;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Ambient atmospheric glow */
+    .ambient-glow {
+      position: absolute;
+      width: 800px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(46, 184, 240, 0.15) 0%, rgba(26, 143, 212, 0) 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+      filter: blur(40px);
+    }
+
+    /* Header / Toolbar */
+    .preview-header {
+      position: relative;
+      z-index: 20;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: var(--toolbar-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--toolbar-border);
+      border-radius: 9999px;
+      box-shadow: var(--toolbar-shadow);
+    }
+
+    .brand-icon {
+      font-size: 18px;
+      filter: drop-shadow(0 2px 6px rgba(0, 180, 255, 0.5));
+    }
+
+    .brand-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+    }
+
+    .brand-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 7px;
+      border-radius: 6px;
+      background: var(--accent-gradient);
+      color: #fff;
+      box-shadow: 0 2px 8px var(--accent-glow);
+    }
+
+    /* Toolbar Controls Group */
+    .controls-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      background: var(--toolbar-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--toolbar-border);
+      border-radius: 9999px;
+      box-shadow: var(--toolbar-shadow);
+    }
+
+    .control-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+      white-space: nowrap;
+    }
+
+    .control-btn:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .control-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .control-btn.active {
+      background: var(--accent-gradient);
+      color: #ffffff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .control-btn svg {
+      width: 14px;
+      height: 14px;
+      stroke-width: 2.2;
+    }
+
+    .control-select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 7px 28px 7px 14px;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 12.5px;
+      font-weight: 600;
+      border-radius: 9999px;
+      cursor: pointer;
+      outline: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238bb3e6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: all 0.18s ease;
+    }
+
+    .control-select:hover {
+      background-color: var(--btn-hover);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .control-select option {
+      background: #0b1c3d;
+      color: #fff;
+      font-family: var(--font-main);
+    }
+
+    /* Target URL Pill with Edit capability */
+    .url-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .url-pill:hover {
+      border-color: var(--accent);
+      color: var(--text-main);
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .url-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      flex-shrink: 0;
+    }
+
+    /* Main Stage Area */
+    .stage-wrapper {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 20px 24px;
+      overflow: hidden;
+    }
+
+    /* Device Scaling Viewport */
+    .device-scaler {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-origin: center center;
+      transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Realistic Phone Shell (Modern iPhone Pro Titanium) */
+    .phone-shell {
+      position: relative;
+      background: var(--frame-titanium);
+      border-radius: 54px;
+      padding: 12px;
+      box-shadow: 
+        0 0 0 1px var(--frame-border),
+        0 0 0 4px var(--frame-bezel),
+        0 24px 70px var(--frame-glow),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.6);
+      transition: all 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    /* Hardware Buttons - Landscape Layout */
+    .phone-shell .btn-action {
+      position: absolute;
+      top: -3px;
+      left: 140px;
+      width: 42px;
+      height: 4px;
+      background: #2a2c33;
+      border-radius: 3px 3px 0 0;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .phone-shell .btn-vol-up {
+      position: absolute;
+      top: -3px;
+      left: 196px;
+      width: 64px;
+      height: 4px;
+      background: #2a2c33;
+      border-radius: 3px 3px 0 0;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .phone-shell .btn-vol-down {
+      position: absolute;
+      top: -3px;
+      left: 270px;
+      width: 64px;
+      height: 4px;
+      background: #2a2c33;
+      border-radius: 3px 3px 0 0;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+    }
+
+    .phone-shell .btn-power {
+      position: absolute;
+      bottom: -3px;
+      left: 220px;
+      width: 90px;
+      height: 4px;
+      background: #2a2c33;
+      border-radius: 0 0 3px 3px;
+      box-shadow: inset 0 -1px 1px rgba(255,255,255,0.2);
+    }
+
+    /* The Screen Screen Window */
+    .screen-window {
+      position: relative;
+      background: #000000;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
+      contain: paint;
+    }
+
+    /* Screen sizes based on presets */
+    /* 1. Landscape iPhone (Default for Ocean Wonders) */
+    .device-scaler.landscape .screen-window {
+      width: 852px;
+      height: 393px;
+    }
+
+    /* 2. Portrait iPhone (Gate & Rotate testing) */
+    .device-scaler.portrait .screen-window {
+      width: 393px;
+      height: 852px;
+    }
+
+    .device-scaler.portrait .btn-action {
+      top: 140px;
+      left: -3px;
+      width: 4px;
+      height: 42px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .device-scaler.portrait .btn-vol-up {
+      top: 196px;
+      left: -3px;
+      width: 4px;
+      height: 64px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .device-scaler.portrait .btn-vol-down {
+      top: 270px;
+      left: -3px;
+      width: 4px;
+      height: 64px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .device-scaler.portrait .btn-power {
+      top: 220px;
+      left: auto;
+      right: -3px;
+      bottom: auto;
+      width: 4px;
+      height: 90px;
+      border-radius: 0 3px 3px 0;
+    }
+
+    /* 3. iPad / Tablet Landscape */
+    .device-scaler.ipad .screen-window {
+      width: 960px;
+      height: 640px;
+      border-radius: 28px;
+    }
+    .device-scaler.ipad .phone-shell {
+      border-radius: 38px;
+    }
+
+    /* 4. Fullscreen Borderless Mode */
+    .device-scaler.fullscreen {
+      width: 100% !important;
+      height: 100% !important;
+      transform: none !important;
+    }
+    .device-scaler.fullscreen .phone-shell {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+      border: none;
+    }
+    .device-scaler.fullscreen .screen-window {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 0;
+    }
+    .device-scaler.fullscreen .phone-chrome,
+    .device-scaler.fullscreen .btn-action,
+    .device-scaler.fullscreen .btn-vol-up,
+    .device-scaler.fullscreen .btn-vol-down,
+    .device-scaler.fullscreen .btn-power {
+      display: none !important;
+    }
+
+    /* Hardware Chrome Overlays (Dynamic Island, Status Bar, Home Indicator) */
+    .phone-chrome {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute;
+      background: #000000;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), inset 0 0 1px rgba(255,255,255,0.2);
+      transition: all 0.35s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+    }
+
+    .camera-lens {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #152540 0%, #05070a 80%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 0 3px rgba(0, 150, 255, 0.4);
+    }
+
+    .phone-shell .bezel-cam {
+      position: absolute;
+      left: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #152540 0%, #05070a 80%);
+      border: 0.5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 2px rgba(0, 150, 255, 0.4);
+      display: none;
+    }
+
+    .device-scaler.landscape .phone-shell .bezel-cam {
+      display: block;
+    }
+
+    /* Landscape Dynamic Island: Hidden inside screen to prevent blocking cards/buttons */
+    .device-scaler.landscape .dynamic-island {
+      display: none;
+    }
+
+    /* Portrait Dynamic Island (Centered on top bezel) */
+    .device-scaler.portrait .dynamic-island {
+      top: 13px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 115px;
+      height: 32px;
+    }
+
+    .device-scaler.ipad .dynamic-island {
+      display: none;
+    }
+
+    /* Status Bar info (Time, 5G, Wifi, Battery) */
+    .status-bar {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      padding: 0 24px;
+      z-index: 12;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      pointer-events: none;
+    }
+
+    .device-scaler.landscape .status-bar {
+      top: 4px;
+      left: 20px;
+      right: 20px;
+      height: 18px;
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    .device-scaler.portrait .status-bar {
+      top: 14px;
+      left: 20px;
+      right: 20px;
+      height: 24px;
+    }
+
+    .device-scaler.ipad .status-bar {
+      top: 10px;
+      left: 24px;
+      right: 24px;
+      height: 20px;
+    }
+
+    .status-bar-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-bar-icons svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* Home Indicator bar */
+    .home-indicator {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 4.5px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* The embedded App Iframe */
+    .app-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #061846;
+      border-radius: inherit;
+    }
+
+    /* Loading state overlay inside screen */
+    .screen-loader {
+      position: absolute;
+      inset: 0;
+      background: #061846;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      z-index: 5;
+      opacity: 1;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .screen-loader.hidden {
+      opacity: 0;
+    }
+
+    .loader-spinner {
+      width: 38px;
+      height: 38px;
+      border: 3.5px solid rgba(94, 212, 255, 0.2);
+      border-top-color: #5ed4ff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loader-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #8bb3e6;
+      letter-spacing: 0.02em;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer hints */
+    .preview-footer {
+      position: relative;
+      z-index: 20;
+      padding: 6px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .shortcut-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 2px 5px;
+      background: var(--btn-bg);
+      border: 1px solid var(--btn-border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--text-main);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .preview-header {
+        padding: 8px 12px;
+        gap: 8px;
+      }
+      .brand-tag {
+        display: none;
+      }
+      .url-pill {
+        display: none;
+      }
+      .control-btn span {
+        display: none;
+      }
+      .control-btn {
+        padding: 7px 10px;
+      }
+      .preview-footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="viewport-canvas" id="canvasRoot">
+    <div class="grid-overlay"></div>
+    <div class="ambient-glow"></div>
+
+    <!-- Top Navigation & Control Bar -->
+    <header class="preview-header">
+      <!-- App Brand / Title -->
+      <div class="brand-pill">
+        <span class="brand-icon">🌊</span>
+        <span class="brand-title">Ocean Wonders</span>
+        <span class="brand-tag">Preview</span>
+      </div>
+
+      <!-- Controls Group -->
+      <div class="controls-container">
+        <!-- Rotate Toggle -->
+        <button class="control-btn" id="btnRotate" title="Toggle Orientation (R)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="rotateLabel">Landscape</span>
+        </button>
+
+        <!-- Device Preset Selector -->
+        <select class="control-select" id="deviceSelect" title="Select Device Frame">
+          <option value="landscape">iPhone 16 Pro (Landscape)</option>
+          <option value="ipad">iPad Air (Landscape)</option>
+          <option value="portrait">iPhone 16 Pro (Portrait)</option>
+          <option value="fullscreen">Borderless (Fullscreen)</option>
+        </select>
+
+        <!-- Quick Screen / Level Selector -->
+        <select class="control-select" id="quickRouteSelect" title="Jump directly to Level or Screen">
+          <option value="">🎯 Jump to Screen...</option>
+          <option value="/ocean/pacific/level/level-1">⭐ Pacific: Level 1</option>
+          <option value="/ocean/pacific/level/level-2">⭐ Pacific: Level 2</option>
+          <option value="/ocean/pacific">🗺️ Pacific Ocean Map</option>
+          <option value="/">🌍 World Map (All Oceans)</option>
+          <option value="/onboarding">🚀 Onboarding Screen</option>
+          <option value="/login">🔑 Login / Profile</option>
+          <option value="/shop">🛍️ Pearl Shop</option>
+        </select>
+
+        <!-- Target Source Selector -->
+        <select class="control-select" id="sourceSelect" title="Select App Source">
+          <option value="auto">⚡ Local Dev Server (localhost:8083)</option>
+          <option value="live">🌐 Live Production Demo</option>
+          <option value="custom">✏️ Custom URL...</option>
+        </select>
+
+        <!-- Reload Iframe -->
+        <button class="control-btn" id="btnReload" title="Reload Frame (Ctrl+R)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 3v5h-5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 16H3v5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button class="control-btn" id="btnTheme" title="Cycle Canvas Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Open in New Tab -->
+        <button class="control-btn" id="btnOpenTab" title="Open Game in New Tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="15 3 21 3 21 9" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="10" y1="14" x2="21" y2="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Current URL Pill -->
+      <div class="url-pill" id="urlPill" title="Click to copy or change URL">
+        <span class="url-status-dot"></span>
+        <span id="urlDisplay">Loading...</span>
+      </div>
+    </header>
+
+    <!-- Center Stage -->
+    <main class="stage-wrapper" id="stageWrapper">
+      <div class="device-scaler landscape" id="deviceScaler">
+        <div class="phone-shell">
+          <!-- Physical Hardware Buttons & Bezel Camera -->
+          <div class="bezel-cam"></div>
+          <div class="btn-action"></div>
+          <div class="btn-vol-up"></div>
+          <div class="btn-vol-down"></div>
+          <div class="btn-power"></div>
+
+          <!-- Phone Screen Window -->
+          <div class="screen-window">
+            <!-- Hardware Chrome Elements -->
+            <div class="phone-chrome">
+              <!-- Live iOS Status Bar -->
+              <div class="status-bar">
+                <span id="liveTime">9:41</span>
+                <div class="status-bar-icons">
+                  <!-- Cellular 5G Icon -->
+                  <svg viewBox="0 0 24 24">
+                    <rect x="2" y="16" width="3" height="5" rx="0.5"/>
+                    <rect x="7" y="13" width="3" height="8" rx="0.5"/>
+                    <rect x="12" y="9" width="3" height="12" rx="0.5"/>
+                    <rect x="17" y="5" width="3" height="16" rx="0.5"/>
+                  </svg>
+                  <!-- WiFi Icon -->
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-4.95-3.05a7 7 0 0 1 9.9 0l1.41-1.41a9 9 0 0 0-12.72 0l1.41 1.41zm-2.83-2.83a11 11 0 0 1 15.56 0l1.41-1.41a13 13 0 0 0-18.38 0l1.41 1.41z"/>
+                  </svg>
+                  <!-- Battery Icon -->
+                  <svg viewBox="0 0 24 24" style="width: 18px;">
+                    <rect x="2" y="7" width="18" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <rect x="4" y="9" width="12" height="6" rx="1" fill="currentColor"/>
+                    <path d="M21 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Dynamic Island Notch -->
+              <div class="dynamic-island">
+                <div class="camera-lens"></div>
+              </div>
+
+              <!-- Home Indicator Bar -->
+              <div class="home-indicator"></div>
+            </div>
+
+            <!-- Loading Skeleton -->
+            <div class="screen-loader" id="screenLoader">
+              <div class="loader-spinner"></div>
+              <div class="loader-text">Loading Ocean Wonders...</div>
+            </div>
+
+            <!-- The Real Interactive Application Iframe -->
+            <iframe
+              id="gameFrame"
+              class="app-iframe"
+              title="Ocean Wonders Game"
+              allow="autoplay; fullscreen; camera; microphone; clipboard-write; web-share; encrypted-media"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Tips -->
+    <footer class="preview-footer">
+      <div class="shortcut-hint">
+        <span class="kbd">R</span> Rotate Orientation
+      </div>
+      <div class="shortcut-hint">
+        <span class="kbd">Ctrl+R</span> Reload Preview
+      </div>
+      <div class="shortcut-hint">
+        <span>🌊 Optimized for Landscape Game Experience</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      // Configuration & Defaults
+      const PRODUCTION_URL = "https://demo.sourapps.com/ocean-wonders-v2/";
+      const themes = ["dark", "blueprint", "light"];
+      let currentThemeIndex = 0;
+      let currentMode = "landscape"; // "landscape", "portrait", "ipad", "fullscreen"
+
+      // DOM Elements
+      const canvasRoot = document.getElementById("canvasRoot");
+      const stageWrapper = document.getElementById("stageWrapper");
+      const deviceScaler = document.getElementById("deviceScaler");
+      const gameFrame = document.getElementById("gameFrame");
+      const screenLoader = document.getElementById("screenLoader");
+      const btnRotate = document.getElementById("btnRotate");
+      const rotateLabel = document.getElementById("rotateLabel");
+      const deviceSelect = document.getElementById("deviceSelect");
+      const quickRouteSelect = document.getElementById("quickRouteSelect");
+      const sourceSelect = document.getElementById("sourceSelect");
+      const btnReload = document.getElementById("btnReload");
+      const btnTheme = document.getElementById("btnTheme");
+      const btnOpenTab = document.getElementById("btnOpenTab");
+      const urlDisplay = document.getElementById("urlDisplay");
+      const urlPill = document.getElementById("urlPill");
+      const liveTime = document.getElementById("liveTime");
+
+      /**
+       * Resolve the proper target URL
+       */
+      function resolveTargetUrl(sourceMode) {
+        const params = new URLSearchParams(window.location.search);
+        const queryUrl = params.get("url");
+        if (queryUrl) return queryUrl;
+
+        if (sourceMode === "live") {
+          return PRODUCTION_URL;
+        }
+
+        if (window.location.protocol === "file:") {
+          return "http://localhost:8083/ocean-wonders-v2/";
+        }
+
+        // Check if running on localhost / 127.0.0.1
+        const isLocal = window.location.hostname === "localhost" || 
+                        window.location.hostname === "127.0.0.1";
+
+        if (isLocal) {
+          return `${window.location.origin}/ocean-wonders-v2/`;
+        }
+
+        // If accessed directly on demo.sourapps.com
+        if (window.location.hostname === "demo.sourapps.com") {
+          return `${window.location.origin}/ocean-wonders-v2/`;
+        }
+
+        return PRODUCTION_URL;
+      }
+
+      let activeUrl = resolveTargetUrl("auto");
+
+      /**
+       * Load URL into iframe
+       */
+      function loadFrame(url) {
+        activeUrl = url;
+        screenLoader.classList.remove("hidden");
+        gameFrame.src = url;
+        urlDisplay.textContent = url;
+        urlPill.title = `Active: ${url} (Click to change)`;
+      }
+
+      gameFrame.addEventListener("load", function () {
+        setTimeout(function () {
+          screenLoader.classList.add("hidden");
+        }, 300);
+      });
+
+      /**
+       * Responsive scale to fit the window cleanly
+       */
+      function updateDeviceScale() {
+        if (currentMode === "fullscreen") {
+          deviceScaler.style.transform = "none";
+          return;
+        }
+
+        const stageRect = stageWrapper.getBoundingClientRect();
+        const availWidth = stageRect.width - 40;
+        const availHeight = stageRect.height - 40;
+
+        let naturalWidth = 852 + 24;
+        let naturalHeight = 393 + 24;
+
+        if (currentMode === "portrait") {
+          naturalWidth = 393 + 24;
+          naturalHeight = 852 + 24;
+        } else if (currentMode === "ipad") {
+          naturalWidth = 960 + 24;
+          naturalHeight = 640 + 24;
+        }
+
+        const scaleX = availWidth / naturalWidth;
+        const scaleY = availHeight / naturalHeight;
+        const scale = Math.min(Math.min(scaleX, scaleY), 1.05);
+
+        deviceScaler.style.transform = `scale(${Math.max(scale, 0.45)})`;
+      }
+
+      /**
+       * Set orientation/preset mode
+       */
+      function setMode(mode) {
+        currentMode = mode;
+        deviceScaler.className = "device-scaler " + mode;
+        deviceSelect.value = mode;
+
+        if (mode === "portrait") {
+          rotateLabel.textContent = "Portrait";
+          btnRotate.classList.add("active");
+        } else {
+          rotateLabel.textContent = "Landscape";
+          btnRotate.classList.remove("active");
+        }
+
+        updateDeviceScale();
+      }
+
+      // Event Listeners
+      btnRotate.addEventListener("click", function () {
+        if (currentMode === "landscape" || currentMode === "ipad") {
+          setMode("portrait");
+        } else {
+          setMode("landscape");
+        }
+      });
+
+      deviceSelect.addEventListener("change", function (e) {
+        setMode(e.target.value);
+      });
+
+      quickRouteSelect.addEventListener("change", function (e) {
+        const route = e.target.value;
+        if (!route) return;
+        let base = resolveTargetUrl(sourceSelect.value);
+        if (base.endsWith("/")) base = base.slice(0, -1);
+        loadFrame(base + route);
+      });
+
+      sourceSelect.addEventListener("change", function (e) {
+        const val = e.target.value;
+        if (val === "custom") {
+          const userUrl = prompt("Enter the application URL:", activeUrl);
+          if (userUrl && userUrl.trim()) {
+            loadFrame(userUrl.trim());
+          } else {
+            sourceSelect.value = "auto";
+          }
+        } else {
+          loadFrame(resolveTargetUrl(val));
+        }
+      });
+
+      btnReload.addEventListener("click", function () {
+        btnReload.style.transform = "rotate(360deg)";
+        setTimeout(() => btnReload.style.transform = "", 400);
+        screenLoader.classList.remove("hidden");
+        gameFrame.src = activeUrl;
+      });
+
+      btnTheme.addEventListener("click", function () {
+        currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+        const theme = themes[currentThemeIndex];
+        canvasRoot.setAttribute("data-theme", theme);
+      });
+
+      btnOpenTab.addEventListener("click", function () {
+        window.open(activeUrl, "_blank");
+      });
+
+      urlPill.addEventListener("click", function () {
+        const newUrl = prompt("Edit preview URL:", activeUrl);
+        if (newUrl && newUrl.trim()) {
+          loadFrame(newUrl.trim());
+        }
+      });
+
+      // Keyboard Shortcuts
+      window.addEventListener("keydown", function (e) {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+
+        if (e.key === "r" || e.key === "R") {
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            btnRotate.click();
+          }
+        }
+        if (e.key === "f" || e.key === "F") {
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault();
+            setMode(currentMode === "fullscreen" ? "landscape" : "fullscreen");
+          }
+        }
+      });
+
+      // Live Time in Status Bar
+      function updateClock() {
+        if (!liveTime) return;
+        const now = new Date();
+        liveTime.textContent = new Intl.DateTimeFormat(undefined, {
+          hour: "numeric",
+          minute: "2-digit",
+        }).format(now);
+      }
+      updateClock();
+      setInterval(updateClock, 15000);
+
+      // Window resize handling
+      window.addEventListener("resize", updateDeviceScale);
+
+      // Initial boot
+      setMode("landscape");
+      loadFrame(activeUrl);
+    })();
+  </script>
+</body>
+</html>

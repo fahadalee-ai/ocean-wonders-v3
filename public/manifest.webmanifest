@@ -1,0 +1,17 @@
+{
+  "name": "Ocean Wonders",
+  "short_name": "Ocean Wonders",
+  "description": "A playful ocean adventure for kids — explore the five oceans and meet amazing sea creatures!",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#0A2F7A",
+  "theme_color": "#0A2F7A",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}
