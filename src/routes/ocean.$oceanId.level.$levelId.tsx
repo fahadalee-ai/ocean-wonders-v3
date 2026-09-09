@@ -31,7 +31,9 @@ import {
 import { LevelPlayBackground } from "@/components/LevelPlayBackground";
 import { GlossyButton } from "@/components/GlossyButton";
 import { LevelCompleteSchoolSwim } from "@/components/LevelCompleteSchoolSwim";
-import { MatchOceanFriendsLevel } from "@/components/MatchOceanFriends";
+import { FishMatchingGame } from "@/components/FishMatchingGame";
+import { COPY } from "@/data/content";
+import bannerGreatJob from "@/assets/banner-great-job.png";
 import { BackButton, RoundIconButton, glassHeaderPanelStyle, PAGE_HEADER_PAD } from "@/components/BackBubble";
 import {
   getLevelProgress,
@@ -396,6 +398,8 @@ function WinOverlay({
   nextTarget,
   onReplay,
   backOceanId,
+  coins = 0,
+  oceanComplete = false,
 }: {
   ocean: Ocean;
   level: Level;
@@ -409,6 +413,8 @@ function WinOverlay({
   nextTarget?: { oceanId: string; levelId: string };
   onReplay: () => void;
   backOceanId: string;
+  coins?: number;
+  oceanComplete?: boolean;
 }) {
   const navigate = useNavigate();
   const praise = PRAISE[Math.min(Math.max(stars, 1), PRAISE.length) - 1] ?? PRAISE[0]!;
@@ -448,6 +454,10 @@ function WinOverlay({
     onReplay();
   };
 
+  useEffect(() => {
+    celebrate();
+  }, []);
+
   const overlay = (
     <div
       role="dialog"
@@ -466,67 +476,61 @@ function WinOverlay({
       />
 
       <div
-        className="relative z-10 flex max-h-[min(94dvh,560px)] w-full max-w-3xl flex-col overflow-y-auto rounded-2xl border-2 p-3 text-center sm:rounded-3xl sm:p-4"
+        className="relative z-10 flex max-h-[min(94dvh,560px)] w-full max-w-3xl flex-col overflow-y-auto rounded-[1.75rem] border-4 p-3 text-center sm:p-4"
         style={{
-          background: "linear-gradient(160deg, rgba(8,40,110,0.96) 0%, rgba(20,70,150,0.94) 100%)",
-          borderColor: "rgba(94,212,255,0.6)",
-          boxShadow: "0 30px 60px -12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(186,232,255,0.9) 100%)",
+          borderColor: "#FFFFFF",
+          boxShadow: "0 24px 48px rgba(0,30,70,0.28)",
         }}
       >
-        {/* Landscape: character + title side-by-side */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <h2 id="level-complete-title" className="mx-auto w-full max-w-xl">
+          <img
+            src={bannerGreatJob}
+            alt={oceanComplete ? COPY.oceanComplete : COPY.greatJob}
+            className="mx-auto h-[min(18vh,120px)] w-auto max-w-full object-contain"
+            draggable={false}
+          />
+        </h2>
+        <div className="mt-1 flex items-center justify-center gap-3">
           <img
             src={preview.img}
             alt=""
-            className="h-16 w-16 shrink-0 object-contain drop-shadow-lg sm:h-20 sm:w-20"
+            className="h-14 w-14 shrink-0 object-contain drop-shadow-lg sm:h-16 sm:w-16"
             draggable={false}
           />
-          <div className="min-w-0 flex-1 text-left">
-            <h2
-              id="level-complete-title"
-              className="font-display text-2xl font-bold uppercase leading-tight text-white sm:text-3xl"
-              style={{ textShadow: "0 2px 0 rgba(0,40,90,0.35)" }}
-            >
-              Level Complete!
-            </h2>
-            <p className="mt-0.5 truncate text-xs font-semibold text-white/85 sm:text-sm">
-              {ocean.name} ·{" "}
-              {level.isSpeedChallenge
-                ? "Speed Challenge"
-                : level.isFriendsMatch
-                  ? "Ocean Friends"
-                  : level.title}
+          <div className="min-w-0 text-left">
+            <p className="truncate text-xs font-extrabold text-[#0B3D91] sm:text-sm" style={{ fontFamily: '"Baloo 2", sans-serif' }}>
+              {ocean.name} · {level.title}
+              {oceanComplete ? " · Ocean Complete!" : ""}
             </p>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <p className="font-display text-base font-bold sm:text-lg" style={{ color: "#FFE566" }}>
+              <p className="text-base font-extrabold text-[#FF8C2A] sm:text-lg" style={{ fontFamily: '"Baloo 2", sans-serif' }}>
                 {praise}
               </p>
               <StarsRow stars={stars} compact />
-              <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: "#5ED4FF" }}>
-                {stars === 3 ? "Perfect" : stars === 2 ? "Very Good" : "Good"}
-              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+        <div className="mt-3 grid grid-cols-4 gap-2 text-center">
           {[
             { label: "Score", value: String(score) },
             { label: "Time", value: formatTime(elapsedSec) },
             { label: "Accuracy", value: `${accuracy}%` },
+            { label: "Coins", value: `+${coins}` },
           ].map((stat) => (
             <div
               key={stat.label}
-              className="rounded-xl border px-2 py-1.5 sm:py-2"
+              className="rounded-xl border-2 px-2 py-1.5 sm:py-2"
               style={{
-                background: "rgba(6,24,70,0.55)",
-                borderColor: "rgba(94,212,255,0.4)",
+                background: "rgba(255,255,255,0.65)",
+                borderColor: "rgba(255,255,255,0.95)",
               }}
             >
-              <div className="text-[10px] font-bold uppercase" style={{ color: "#5ED4FF" }}>
+              <div className="text-[10px] font-extrabold uppercase text-[#1AA8E8]">
                 {stat.label}
               </div>
-              <div className="font-display text-base font-bold text-white sm:text-lg">{stat.value}</div>
+              <div className="text-base font-extrabold text-[#0B3D91] sm:text-lg" style={{ fontFamily: '"Baloo 2", sans-serif' }}>{stat.value}</div>
             </div>
           ))}
         </div>
@@ -540,7 +544,7 @@ function WinOverlay({
               onClick={goNext}
               className="max-w-[220px] flex-1 !min-h-[48px]"
             >
-              {busy ? "Loading…" : "Next Level →"}
+              {busy ? "Loading…" : oceanComplete ? "Next Ocean →" : `${COPY.nextLevel} →`}
             </GlossyButton>
           )}
           <GlossyButton
@@ -551,17 +555,21 @@ function WinOverlay({
             className="max-w-[200px] flex-1 !min-h-[48px]"
           >
             <RotateCcw className="h-4 w-4" strokeWidth={3} />
-            Replay Level
+            {COPY.replay}
           </GlossyButton>
         </div>
         <button
           type="button"
           disabled={busy}
-          onClick={goBack}
-          className="mt-2 font-display text-sm font-bold underline disabled:opacity-50"
-          style={{ color: "#5ED4FF" }}
+          onClick={() => {
+            if (busy) return;
+            setBusy(true);
+            navigate({ to: "/globe" });
+          }}
+          className="mt-2 text-sm font-extrabold underline disabled:opacity-50"
+          style={{ color: "#0B3D91", fontFamily: '"Baloo 2", sans-serif' }}
         >
-          Back to Ocean
+          {COPY.backToMap}
         </button>
       </div>
     </div>
@@ -752,14 +760,30 @@ function MatchLevelFlow({
   }
 
   return (
-    <ShadowMatchLevel
+    <FishMatchingGame
       key={`play-${level.number}-${playKey}`}
       ocean={ocean}
       level={level}
       fish={fish}
       onDone={onDone}
       onReplay={replay}
-      nextTarget={nextTarget}
+      renderWin={({ stars, score, elapsedSec, accuracy, coins, preview, oceanComplete }) => (
+        <WinOverlay
+          ocean={ocean}
+          level={level}
+          stars={stars}
+          score={score}
+          preview={preview}
+          fish={fish}
+          elapsedSec={elapsedSec}
+          accuracy={accuracy}
+          coins={coins}
+          oceanComplete={oceanComplete}
+          nextTarget={nextTarget}
+          onReplay={replay}
+          backOceanId={ocean.id}
+        />
+      )}
     />
   );
 }
@@ -786,15 +810,14 @@ function FriendsLevelFlow({
   }, [level.number]);
 
   return (
-    <MatchOceanFriendsLevel
+    <FishMatchingGame
       key={`friends-${level.number}-${playKey}`}
       ocean={ocean}
       level={level}
       fish={fish}
       onDone={onDone}
       onReplay={() => setPlayKey((k) => k + 1)}
-      nextTarget={nextTarget}
-      renderWin={({ stars, score, elapsedSec, accuracy, preview }) => (
+      renderWin={({ stars, score, elapsedSec, accuracy, coins, preview, oceanComplete }) => (
         <WinOverlay
           ocean={ocean}
           level={level}
@@ -804,6 +827,8 @@ function FriendsLevelFlow({
           fish={fish}
           elapsedSec={elapsedSec}
           accuracy={accuracy}
+          coins={coins}
+          oceanComplete={oceanComplete}
           nextTarget={nextTarget}
           onReplay={() => setPlayKey((k) => k + 1)}
           backOceanId={ocean.id}

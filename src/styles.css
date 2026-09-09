@@ -36,7 +36,8 @@
   --color-bubble: var(--bubble);
   --color-sand: var(--sand);
 
-  --font-display: "Fredoka", ui-rounded, system-ui, sans-serif;
+  --font-display: "Luckiest Guy", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-bubble: "Baloo 2", "Luckiest Guy", ui-rounded, system-ui, sans-serif;
   --font-sans: "Nunito", ui-rounded, system-ui, sans-serif;
 }
 
@@ -89,7 +90,7 @@
     overflow: hidden;
     overscroll-behavior: none;
     /* Match app navy so any edge bleed isn't a black strip */
-    background-color: #061846;
+    background-color: #1E8BC8;
   }
 
   body {
@@ -106,7 +107,7 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #061846;
+    background-color: #1E8BC8;
   }
 
   /* App shell: full viewport, never page-scroll */
@@ -118,7 +119,7 @@
     width: 100%;
     max-width: 100%;
     overflow: hidden;
-    background-color: #061846;
+    background-color: #1E8BC8;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }

@@ -25,7 +25,7 @@ export const Route = createFileRoute("/ocean/$oceanId/")({
         { title: `${name} — Levels — Ocean Wonders` },
         {
           name: "description",
-          content: `Choose a level in the ${name} — Meet & Learn, Shadow Match, Speed Challenge, and Match the Ocean Friends!`,
+          content: `Choose a fish-matching level in the ${name}!`,
         },
         { property: "og:title", content: `${name} Levels` },
         { property: "og:description", content: `Dive into the ${name} and clear every level.` },
@@ -97,7 +97,7 @@ function LevelSelectPage() {
   }, [ocean]);
 
   return (
-    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#0A2F7A" }}>
+    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#1E8BC8" }}>
       <AuthOceanBackground fishCount={6} />
 
       <header className={`relative z-10 mx-auto flex w-full max-w-5xl shrink-0 items-center gap-3 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:gap-4 sm:pb-2 sm:pt-3 ${PAGE_HEADER_PAD}`}>
@@ -109,19 +109,19 @@ function LevelSelectPage() {
         >
           <div className="flex items-center gap-2.5">
             <div
-              className="hidden h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 sm:flex"
+              className="hidden h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 sm:flex"
               style={{
                 borderColor: "#5ED4FF",
                 background: "linear-gradient(160deg, rgba(255,255,255,0.2), rgba(10,50,120,0.4))",
               }}
             >
-              <img src={ocean.character.img} alt="" className="h-[88%] w-[88%] object-contain" draggable={false} />
+              <img src={ocean.badge} alt="" className="h-full w-full object-cover" draggable={false} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h1
-                  className="min-w-0 truncate font-display text-xl font-bold uppercase leading-none text-white sm:text-2xl"
-                  style={{ textShadow: "0 1px 2px rgba(0,20,60,0.45)" }}
+                  className="min-w-0 truncate text-xl font-extrabold uppercase leading-none text-[#0B3D91] sm:text-2xl"
+                  style={{ fontFamily: '"Luckiest Guy", sans-serif' }}
                 >
                   {ocean.name}
                 </h1>
@@ -132,16 +132,16 @@ function LevelSelectPage() {
                   {ocean.difficultyLabel}
                 </span>
               </div>
-              <p className="mt-1 truncate text-xs font-bold text-white/85 sm:text-sm">
-                <span style={{ color: "#FFE566" }}>{stats.stars} stars</span>
-                <span className="mx-1.5 text-white/35">·</span>
+              <p className="mt-1 truncate text-xs font-extrabold text-[#0B3D91]/80 sm:text-sm">
+                <span style={{ color: "#E67A00" }}>{stats.stars} stars</span>
+                <span className="mx-1.5 text-[#0B3D91]/30">·</span>
                 <span>
                   {stats.completed}/{stats.total} levels
                 </span>
               </p>
             </div>
           </div>
-          <p className="mt-1.5 line-clamp-1 text-[11px] font-semibold leading-snug text-white/70 sm:text-xs">
+          <p className="mt-1.5 line-clamp-1 text-[11px] font-bold leading-snug text-[#0B3D91]/70 sm:text-xs">
             {ocean.tagline}
           </p>
           <div
@@ -159,7 +159,7 @@ function LevelSelectPage() {
         </div>
       </header>
 
-      <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-5xl flex-1 grid-cols-3 content-start gap-2 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:grid-cols-4 sm:gap-3 sm:px-6 lg:grid-cols-7">
+      <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-5xl flex-1 grid-cols-3 content-start gap-2 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:grid-cols-3 sm:gap-3 sm:px-6 lg:grid-cols-6">
         {levels.map((level) => {
           const locked = !level.unlocked;
           const isBonus = level.isSpeedChallenge || level.isFriendsMatch;
@@ -167,18 +167,10 @@ function LevelSelectPage() {
             <div
               className="relative overflow-hidden rounded-lg border-2 p-2.5 text-center sm:rounded-xl sm:p-3"
               style={{
-                background: level.isFriendsMatch
-                  ? "linear-gradient(180deg, #1560A8 0%, #0E4A88 55%, #0A3A70 100%)"
-                  : level.isSpeedChallenge
-                    ? "linear-gradient(180deg, #1A4A9A 0%, #123A7A 55%, #0C2F66 100%)"
-                    : "linear-gradient(180deg, #1650B0 0%, #0E3D8F 55%, #0A2F7A 100%)",
-                borderColor: level.isFriendsMatch
-                  ? "#FFE566"
-                  : level.isSpeedChallenge
-                    ? "#FFB347"
-                    : "#5ED4FF",
+                background: "linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(176,226,255,0.78) 100%)",
+                borderColor: "#FFFFFF",
                 boxShadow:
-                  "0 8px 20px rgba(0,15,50,0.45), inset 0 1px 0 rgba(255,255,255,0.18)",
+                  "0 8px 18px rgba(0,30,70,0.18), inset 0 2px 0 rgba(255,255,255,0.85)",
                 filter: locked ? "grayscale(0.4)" : undefined,
               }}
             >
@@ -229,8 +221,8 @@ function LevelSelectPage() {
               </div>
 
               <h3
-                className="mt-1.5 truncate font-display text-sm font-bold uppercase text-white sm:text-base"
-                style={{ textShadow: "0 1px 2px rgba(0,20,60,0.4)" }}
+                className="mt-1.5 truncate text-sm font-extrabold uppercase text-[#0B3D91] sm:text-base"
+                style={{ fontFamily: '"Baloo 2", sans-serif' }}
               >
                 {level.isFriendsMatch ? "Ocean Friends" : level.title}
               </h3>

@@ -5,7 +5,7 @@ import type { getOceanStats } from "@/lib/progress";
 
 type OceanStats = ReturnType<typeof getOceanStats>;
 
-export const OCEAN_BAR_ORDER = ["pacific", "atlantic", "indian", "arctic", "southern"] as const;
+export const OCEAN_BAR_ORDER = ["arctic", "atlantic", "pacific", "indian", "southern"] as const;
 
 type Props = {
   oceans: Ocean[];

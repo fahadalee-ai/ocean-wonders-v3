@@ -1,27 +1,46 @@
 import char1 from "@/assets/Characters_1.png";
-import char2 from "@/assets/Characters_2.png";
 import char3 from "@/assets/Characters_3.png";
 import char4 from "@/assets/Characters_4.png";
 import char5 from "@/assets/Characters_5.png";
-import char6 from "@/assets/Characters_6.png";
 import char7 from "@/assets/Characters_7.png";
 import char8 from "@/assets/Characters_8.png";
 import char9 from "@/assets/Characters_9.png";
 import outline1 from "@/assets/Characters_1_outline.png";
-import outline2 from "@/assets/Characters_2_outline.png";
 import outline3 from "@/assets/Characters_3_outline.png";
 import outline4 from "@/assets/Characters_4_outline.png";
 import outline5 from "@/assets/Characters_5_outline.png";
-import outline6 from "@/assets/Characters_6_outline.png";
 import outline7 from "@/assets/Characters_7_outline.png";
 import outline8 from "@/assets/Characters_8_outline.png";
 import outline9 from "@/assets/Characters_9_outline.png";
+
+import imgPuffer from "@/assets/pufferfish-cut.png";
+import imgDugong from "@/assets/dugong-cut.png";
+import imgAngel from "@/assets/c-angelfish.png";
+import imgBeluga from "@/assets/c-beluga.png";
+import imgNarwhal from "@/assets/c-narwhal.png";
+import imgParrot from "@/assets/c-parrotfish.png";
+import imgManta from "@/assets/c-mantaray.png";
+import imgTuna from "@/assets/c-tuna.png";
+import imgKrill from "@/assets/c-krill.png";
+import imgJelly from "@/assets/c-jellyfish.png";
+import imgCod from "@/assets/c-cod.png";
+import imgLion from "@/assets/c-lionfish.png";
+import imgSting from "@/assets/c-stingray.png";
+import imgWhaleShark from "@/assets/c-whaleshark.png";
+import imgClown from "@/assets/c-clownfish.png";
+import imgSeaHorse from "@/assets/c-seahorse.png";
 
 import bgPacific from "@/assets/bg-pacific.jpg";
 import bgAtlantic from "@/assets/bg-atlantic.jpg";
 import bgIndian from "@/assets/bg-indian.jpg";
 import bgArctic from "@/assets/bg-arctic.jpg";
 import bgSouthern from "@/assets/bg-southern.jpg";
+
+import badgeArctic from "@/assets/arctic-ocean.png";
+import badgeAtlantic from "@/assets/atlantic-ocean.png";
+import badgePacific from "@/assets/pacific-ocean.png";
+import badgeIndian from "@/assets/indian-ocean.png";
+import badgeSouthern from "@/assets/southern-ocean.png";
 
 export type LevelMode = "match" | "challenge" | "friends";
 
@@ -31,37 +50,30 @@ export type OceanDifficulty = "Beginner" | "Easy" | "Medium" | "Hard" | "Expert"
 
 /** Tunables that scale difficulty without changing core gameplay. */
 export type Difficulty = {
-  /** How many fish appear in this level. */
   fishCount: number;
-  /** Animation / float speed multiplier (higher = snappier). */
   speed: number;
-  /** Drop-target scale (lower = smaller / harder). */
   targetScale: number;
-  /** Grid spacing for creatures & shadows. */
   gap: GapSize;
-  /** Whether shadow order is shuffled vs creature order. */
   shuffleShadows: boolean;
-  /** Slight random rotation on fish tiles. */
   rotateFish: boolean;
-  /** How many tap options in speed-challenge rounds. */
   optionCount: number;
+  /** Magnetic snap radius in pixels (larger = easier). */
+  snapRadius: number;
+  /** Extra lookalike silhouettes that are not in the inventory. */
+  distractorCount: number;
 };
 
 export type Level = {
   id: string;
-  /** Global sequential number used for unlock progression. */
   number: number;
-  /** 1–7 within the ocean (6 = Speed Challenge, 7 = Match the Ocean Friends). */
   localNumber: number;
   mode: LevelMode;
   title: string;
-  /** Character ids used in this level (data-driven, swappable later). */
   fishIds: string[];
+  distractorIds: string[];
   difficulty: Difficulty;
-  /** Show Meet & Learn for every fish before play. */
   meetAndLearn: boolean;
   isSpeedChallenge: boolean;
-  /** Bonus scene: drag color thumbnails onto gray silhouettes in the ocean. */
   isFriendsMatch: boolean;
   targetScore?: number;
   timeLimit?: number;
@@ -72,6 +84,8 @@ export type Character = {
   name: string;
   funFact: string;
   pronunciation?: string;
+  habitat?: string;
+  diet?: string;
   img: string;
   outline: string;
 };
@@ -80,13 +94,14 @@ export type Ocean = {
   id: string;
   name: string;
   tagline: string;
+  habitat: string;
   accent: string;
   gradient: string;
   bg: string;
-  /** Educational difficulty label for the ocean card. */
+  badge: string;
   difficultyLabel: OceanDifficulty;
-  /** Featured character for ocean cards / branding. */
   character: Character;
+  rosterIds: string[];
   levels: Level[];
 };
 
@@ -95,6 +110,8 @@ const CHARACTERS: Character[] = [
     id: "whale",
     name: "Blue Whale",
     pronunciation: "BLOO WAYL",
+    habitat: "Open ocean",
+    diet: "Tiny krill",
     funFact: "Blue whales are the biggest animals that have ever lived — even bigger than dinosaurs!",
     img: char1,
     outline: outline1,
@@ -103,14 +120,18 @@ const CHARACTERS: Character[] = [
     id: "clownfish",
     name: "Clownfish",
     pronunciation: "KLOWN-fish",
+    habitat: "Warm coral reefs",
+    diet: "Algae and tiny bits of food",
     funFact: "Clownfish are best friends with sea anemones and live safely inside them!",
-    img: char2,
-    outline: outline2,
+    img: imgClown,
+    outline: imgClown,
   },
   {
     id: "crab",
     name: "Crab",
     pronunciation: "KRAB",
+    habitat: "Sandy shores and reefs",
+    diet: "Algae, snails, and leftovers",
     funFact: "Crabs walk sideways because of the way their legs bend!",
     img: char3,
     outline: outline3,
@@ -119,6 +140,8 @@ const CHARACTERS: Character[] = [
     id: "dolphin",
     name: "Dolphin",
     pronunciation: "DOL-fin",
+    habitat: "Open sea and coasts",
+    diet: "Fish and squid",
     funFact: "Dolphins call each other by name using special whistles!",
     img: char4,
     outline: outline4,
@@ -127,6 +150,8 @@ const CHARACTERS: Character[] = [
     id: "octopus",
     name: "Octopus",
     pronunciation: "OK-tuh-pus",
+    habitat: "Rocky reefs",
+    diet: "Crabs and clams",
     funFact: "Octopuses have three hearts and blue blood — amazing!",
     img: char5,
     outline: outline5,
@@ -135,14 +160,18 @@ const CHARACTERS: Character[] = [
     id: "seahorse",
     name: "Seahorse",
     pronunciation: "SEE-horse",
+    habitat: "Seagrass and reefs",
+    diet: "Tiny shrimp",
     funFact: "Daddy seahorses carry the babies until they hatch!",
-    img: char6,
-    outline: outline6,
+    img: imgSeaHorse,
+    outline: imgSeaHorse,
   },
   {
     id: "seaturtle",
     name: "Sea Turtle",
     pronunciation: "SEE TUR-tul",
+    habitat: "Tropical reefs and open sea",
+    diet: "Seagrass and jellyfish",
     funFact: "Sea turtles have been swimming the oceans for over 100 million years!",
     img: char7,
     outline: outline7,
@@ -151,6 +180,8 @@ const CHARACTERS: Character[] = [
     id: "shark",
     name: "Friendly Shark",
     pronunciation: "SHARK",
+    habitat: "Open sea",
+    diet: "Fish",
     funFact: "Sharks have been around longer than trees — they're ancient ocean explorers!",
     img: char8,
     outline: outline8,
@@ -159,174 +190,304 @@ const CHARACTERS: Character[] = [
     id: "orca",
     name: "Orca",
     pronunciation: "OR-kuh",
+    habitat: "Cold and open seas",
+    diet: "Fish and seals",
     funFact: "Orcas live in families called pods and stay together for life!",
     img: char9,
     outline: outline9,
   },
+  {
+    id: "pufferfish",
+    name: "Pufferfish",
+    pronunciation: "PUF-er-fish",
+    habitat: "Warm reefs",
+    diet: "Algae and tiny shells",
+    funFact: "Pufferfish can puff up like a balloon to look bigger when they feel shy!",
+    img: imgPuffer,
+    outline: imgPuffer,
+  },
+  {
+    id: "dugong",
+    name: "Dugong",
+    pronunciation: "DOO-gong",
+    habitat: "Tropical seagrass meadows",
+    diet: "Seagrass",
+    funFact: "Dugongs are gentle sea cows that graze on seagrass like lawn mowers of the sea!",
+    img: imgDugong,
+    outline: imgDugong,
+  },
+  {
+    id: "angelfish",
+    name: "Angelfish",
+    pronunciation: "AYN-jel-fish",
+    habitat: "Coral reefs",
+    diet: "Sponges and algae",
+    funFact: "Angelfish look like they are wearing bright painted stripes!",
+    img: imgAngel,
+    outline: imgAngel,
+  },
+  {
+    id: "beluga",
+    name: "Beluga Whale",
+    pronunciation: "beh-LOO-guh",
+    habitat: "Cold Arctic waters",
+    diet: "Fish",
+    funFact: "Belugas are called canaries of the sea because they love to chatter and sing!",
+    img: imgBeluga,
+    outline: imgBeluga,
+  },
+  {
+    id: "narwhal",
+    name: "Narwhal",
+    pronunciation: "NAR-wul",
+    habitat: "Arctic deep sea",
+    diet: "Fish and squid",
+    funFact: "A narwhal's long tusk is actually a special tooth that can grow longer than a grown-up!",
+    img: imgNarwhal,
+    outline: imgNarwhal,
+  },
+  {
+    id: "parrotfish",
+    name: "Parrotfish",
+    pronunciation: "PAIR-ut-fish",
+    habitat: "Tropical reefs",
+    diet: "Algae on coral",
+    funFact: "Parrotfish help make beach sand — they nibble coral and poop tiny sand grains!",
+    img: imgParrot,
+    outline: imgParrot,
+  },
+  {
+    id: "mantaray",
+    name: "Manta Ray",
+    pronunciation: "MAN-tuh RAY",
+    habitat: "Open tropical sea",
+    diet: "Tiny plankton",
+    funFact: "Manta rays have the biggest brains of any fish and love to glide like birds!",
+    img: imgManta,
+    outline: imgManta,
+  },
+  {
+    id: "tuna",
+    name: "Tuna",
+    pronunciation: "TOO-nuh",
+    habitat: "Open Atlantic sea",
+    diet: "Smaller fish",
+    funFact: "Tuna can swim as fast as a car on a city street!",
+    img: imgTuna,
+    outline: imgTuna,
+  },
+  {
+    id: "krill",
+    name: "Krill",
+    pronunciation: "KRIL",
+    habitat: "Southern Ocean",
+    diet: "Tiny ocean plants",
+    funFact: "Krill are tiny, but whales eat millions of them — they are ocean superfood!",
+    img: imgKrill,
+    outline: imgKrill,
+  },
+  {
+    id: "jellyfish",
+    name: "Jellyfish",
+    pronunciation: "JEL-ee-fish",
+    habitat: "All the world's oceans",
+    diet: "Tiny drifting animals",
+    funFact: "Jellyfish have been pulsing through the sea since before the dinosaurs!",
+    img: imgJelly,
+    outline: imgJelly,
+  },
+  {
+    id: "cod",
+    name: "Arctic Cod",
+    pronunciation: "AR-tik KOD",
+    habitat: "Cold Arctic waters",
+    diet: "Tiny shrimp and plankton",
+    funFact: "Arctic cod have special antifreeze in their blood so they can swim in icy water!",
+    img: imgCod,
+    outline: imgCod,
+  },
+  {
+    id: "lionfish",
+    name: "Lionfish",
+    pronunciation: "LY-un-fish",
+    habitat: "Warm reefs",
+    diet: "Smaller fish",
+    funFact: "Lionfish have fancy striped fins that look like a lion's mane!",
+    img: imgLion,
+    outline: imgLion,
+  },
+  {
+    id: "stingray",
+    name: "Stingray",
+    pronunciation: "STING-ray",
+    habitat: "Sandy sea floors",
+    diet: "Clams and tiny fish",
+    funFact: "Stingrays hide under the sand and flap their wide wings to swim!",
+    img: imgSting,
+    outline: imgSting,
+  },
+  {
+    id: "whaleshark",
+    name: "Whale Shark",
+    pronunciation: "WAYL SHARK",
+    habitat: "Warm open sea",
+    diet: "Tiny plankton",
+    funFact: "Whale sharks are the biggest fish in the world — and they are gentle giants!",
+    img: imgWhaleShark,
+    outline: imgWhaleShark,
+  },
 ];
+
+/** Real fish only — matching uses these, never whales, turtles, or ice animals. */
+const FISH_IDS = [
+  "clownfish",
+  "pufferfish",
+  "angelfish",
+  "parrotfish",
+  "tuna",
+  "shark",
+  "lionfish",
+  "cod",
+  "seahorse",
+  "stingray",
+  "mantaray",
+  "whaleshark",
+] as const;
 
 type OceanDef = {
   id: string;
   name: string;
+  habitat: string;
   tagline: string;
   accent: string;
   gradient: string;
   bg: string;
+  badge: string;
   difficultyLabel: OceanDifficulty;
-  characterIndex: number;
+  heroId: string;
+  rosterIds: string[];
 };
 
-/** The five real oceans of the world — educational journey order. */
+/** Journey order: Arctic unlocks first, then each ocean after the previous finale. */
 const OCEAN_DEFS: OceanDef[] = [
   {
-    id: "pacific",
-    name: "Pacific Ocean",
-    tagline: "Largest & deepest — tropical reefs await!",
-    accent: "#2EC4F1",
-    gradient: "linear-gradient(180deg, #5EE7C4 0%, #2EC4F1 40%, #0B3D91 100%)",
-    bg: bgPacific,
+    id: "arctic",
+    name: "Arctic Ocean",
+    habitat: "Sea Ice & Cold-Water Reefs",
+    tagline: "Sea Ice & Cold-Water Reefs",
+    accent: "#A8D8EA",
+    gradient: "linear-gradient(180deg, #E8F7FF 0%, #7FD8FF 35%, #061F52 100%)",
+    bg: bgArctic,
+    badge: badgeArctic,
     difficultyLabel: "Beginner",
-    characterIndex: 1, // clownfish
+    heroId: "cod",
+    rosterIds: ["cod", "clownfish", "angelfish", "tuna", "parrotfish", "lionfish", "seahorse", "stingray"],
   },
   {
     id: "atlantic",
     name: "Atlantic Ocean",
-    tagline: "Home of dolphins, whales & sea turtles!",
+    habitat: "Tropical Reefs & Open Sea",
+    tagline: "Tropical Reefs & Open Sea",
     accent: "#3DDC97",
     gradient: "linear-gradient(180deg, #7FD8FF 0%, #2EC4F1 45%, #0B3D91 100%)",
     bg: bgAtlantic,
+    badge: badgeAtlantic,
     difficultyLabel: "Easy",
-    characterIndex: 3, // dolphin
+    heroId: "clownfish",
+    rosterIds: ["clownfish", "angelfish", "tuna", "parrotfish", "lionfish", "pufferfish"],
+  },
+  {
+    id: "pacific",
+    name: "Pacific Ocean",
+    habitat: "Coral Reefs & Open Sea",
+    tagline: "Coral Reefs & Open Sea",
+    accent: "#2EC4F1",
+    gradient: "linear-gradient(180deg, #5EE7C4 0%, #2EC4F1 40%, #0B3D91 100%)",
+    bg: bgPacific,
+    badge: badgePacific,
+    difficultyLabel: "Medium",
+    heroId: "shark",
+    rosterIds: ["shark", "clownfish", "seahorse", "lionfish", "whaleshark", "pufferfish"],
   },
   {
     id: "indian",
     name: "Indian Ocean",
-    tagline: "Warm coral seas & reef explorers!",
+    habitat: "Tropical Reefs & Seagrass",
+    tagline: "Tropical Reefs & Seagrass",
     accent: "#FFD93D",
     gradient: "linear-gradient(180deg, #FFE08A 0%, #2EC4F1 50%, #0B3D91 100%)",
     bg: bgIndian,
-    difficultyLabel: "Medium",
-    characterIndex: 4, // octopus / reef feel
+    badge: badgeIndian,
+    difficultyLabel: "Hard",
+    heroId: "lionfish",
+    rosterIds: ["parrotfish", "angelfish", "clownfish", "lionfish", "mantaray", "seahorse"],
   },
   {
     id: "southern",
     name: "Southern Ocean",
-    tagline: "Icy waters around Antarctica!",
+    habitat: "Ice Shelves & Deep Sea",
+    tagline: "Ice Shelves & Deep Sea",
     accent: "#7FD8FF",
     gradient: "linear-gradient(180deg, #D4F1F9 0%, #7FD8FF 40%, #0B3D91 100%)",
     bg: bgSouthern,
-    difficultyLabel: "Hard",
-    characterIndex: 0, // whale
-  },
-  {
-    id: "arctic",
-    name: "Arctic Ocean",
-    tagline: "Smallest, coldest — the final world!",
-    accent: "#A8D8EA",
-    gradient: "linear-gradient(180deg, #E8F7FF 0%, #7FD8FF 35%, #061F52 100%)",
-    bg: bgArctic,
+    badge: badgeSouthern,
     difficultyLabel: "Expert",
-    characterIndex: 8, // orca
+    heroId: "tuna",
+    rosterIds: ["tuna", "shark", "stingray", "pufferfish", "clownfish", "angelfish"],
   },
 ];
 
-/**
- * Base fish counts per local level (1–5).
- * Later oceans bump these further for progressive difficulty.
- */
-const MATCH_FISH_COUNTS = [2, 3, 4, 6, 8] as const;
+const LEVELS_PER_OCEAN = 6;
+const MATCH_FISH_COUNTS = [4, 6, 6, 6, 8, 8] as const;
+const SNAP_RADIUS = [92, 72, 58, 50, 44, 38] as const;
+const DISTRACTORS = [0, 0, 0, 0, 0, 0] as const;
 
-const LEVELS_PER_OCEAN = 7; // 5 match + speed challenge + Match the Ocean Friends
+function uniquePush(list: string[], id: string) {
+  if (!list.includes(id)) list.push(id);
+}
 
-function pickFishIds(oceanIndex: number, count: number): string[] {
-  const ids = CHARACTERS.map((c) => c.id);
-  const start = oceanIndex % ids.length;
+function isMatchFish(id: string) {
+  return (FISH_IDS as readonly string[]).includes(id);
+}
+
+function pickLevelFish(def: OceanDef, _oceanIndex: number, _localNumber: number, count: number): string[] {
   const result: string[] = [];
-  const wanted = Math.min(count, ids.length);
-  for (let i = 0; i < wanted; i++) {
-    result.push(ids[(start + i) % ids.length]!);
+  for (const id of def.rosterIds) {
+    if (isMatchFish(id)) uniquePush(result, id);
   }
-  return result;
+  for (const id of FISH_IDS) {
+    if (result.length >= count) break;
+    uniquePush(result, id);
+  }
+  return result.filter(isMatchFish).slice(0, count);
 }
 
-function matchDifficulty(localNumber: number, oceanIndex: number): Difficulty {
-  const base = MATCH_FISH_COUNTS[localNumber - 1] ?? 2;
-  // Ocean difficulty bump: Pacific +0 … Arctic +2 (capped at 9)
-  const oceanBump = Math.min(2, Math.floor(oceanIndex / 2) + (oceanIndex >= 3 ? 1 : 0));
-  const levelBump = localNumber >= 4 && oceanIndex >= 2 ? 1 : 0;
-  const fishCount = Math.min(9, base + oceanBump + levelBump);
+function pickDistractors(used: string[], count: number): string[] {
+  if (count <= 0) return [];
+  return FISH_IDS.filter((id) => !used.includes(id)).slice(0, count);
+}
 
+function matchDifficulty(localNumber: number, oceanIndex: number, fishCount: number, distractorCount: number): Difficulty {
   return {
     fishCount,
-    speed: 0.85 + localNumber * 0.1 + oceanIndex * 0.08,
-    targetScale: Math.max(0.58, 1 - (localNumber - 1) * 0.06 - oceanIndex * 0.04),
-    gap:
-      localNumber <= 2 && oceanIndex <= 1
-        ? "comfortable"
-        : localNumber <= 4 && oceanIndex <= 2
-          ? "tight"
-          : "packed",
-    shuffleShadows: localNumber >= 2 || oceanIndex >= 1,
-    rotateFish: false, // keep cards upright for focus; difficulty comes from count/spacing
-    optionCount: Math.min(4, 2 + Math.floor(localNumber / 2) + Math.floor(oceanIndex / 2)),
-  };
-}
-
-function challengeDifficulty(oceanIndex: number): Difficulty {
-  return {
-    fishCount: CHARACTERS.length,
-    speed: 1.3 + oceanIndex * 0.12,
-    targetScale: Math.max(0.62, 0.78 - oceanIndex * 0.03),
-    gap: "packed",
-    shuffleShadows: true,
-    rotateFish: false,
-    optionCount: Math.min(4, 3 + Math.floor(oceanIndex / 2)),
-  };
-}
-
-function friendsDifficulty(oceanIndex: number, fishCount: number): Difficulty {
-  return {
-    fishCount,
-    speed: 1 + oceanIndex * 0.06,
+    speed: 0.85 + localNumber * 0.08 + oceanIndex * 0.05,
     targetScale: 1,
-    gap: "comfortable",
-    shuffleShadows: false,
+    gap: localNumber <= 2 ? "comfortable" : localNumber <= 4 ? "tight" : "packed",
+    shuffleShadows: localNumber >= 2,
     rotateFish: false,
     optionCount: 0,
+    snapRadius: Math.max(32, (SNAP_RADIUS[localNumber - 1] ?? 48) - oceanIndex * 4),
+    distractorCount,
   };
 }
 
-/** Unique creatures taught across this ocean's match levels (data-driven friends set). */
-function friendsFishIds(matchFishLists: string[][], oceanIndex: number): string[] {
-  const seen = new Set<string>();
-  const ordered: string[] = [];
-  for (const list of matchFishLists) {
-    for (const id of list) {
-      if (seen.has(id)) continue;
-      seen.add(id);
-      ordered.push(id);
-    }
-  }
-  // Keep the scene readable in landscape — cap at 8, pad to at least 4
-  let ids = ordered.slice(0, 8);
-  if (ids.length < 4) {
-    for (const id of pickFishIds(oceanIndex, 6)) {
-      if (ids.includes(id)) continue;
-      ids.push(id);
-      if (ids.length >= 4) break;
-    }
-  }
-  return ids;
-}
-
-function buildLevels(oceanIndex: number, startLevel: number, isFinalOcean: boolean): Level[] {
+function buildLevels(def: OceanDef, oceanIndex: number, startLevel: number): Level[] {
   const levels: Level[] = [];
-  const matchFishLists: string[][] = [];
-
-  for (let local = 1; local <= 5; local++) {
-    const difficulty = matchDifficulty(local, oceanIndex);
-    const fishIds = pickFishIds(oceanIndex, difficulty.fishCount);
-    matchFishLists.push(fishIds);
+  for (let local = 1; local <= LEVELS_PER_OCEAN; local++) {
+    const baseCount = MATCH_FISH_COUNTS[local - 1] ?? 4;
+    const fishIds = pickLevelFish(def, oceanIndex, local, baseCount);
+    const distractorIds = pickDistractors(fishIds, DISTRACTORS[local - 1] ?? 0);
+    const difficulty = matchDifficulty(local, oceanIndex, fishIds.length, distractorIds.length);
     levels.push({
       id: `level-${startLevel + local - 1}`,
       number: startLevel + local - 1,
@@ -334,60 +495,32 @@ function buildLevels(oceanIndex: number, startLevel: number, isFinalOcean: boole
       mode: "match",
       title: `Level ${local}`,
       fishIds,
-      difficulty: { ...difficulty, fishCount: fishIds.length },
-      meetAndLearn: true,
+      distractorIds,
+      difficulty,
+      meetAndLearn: false,
       isSpeedChallenge: false,
       isFriendsMatch: false,
+      timeLimit: local === 6 ? 90 : undefined,
     });
   }
-
-  const challengeDiff = challengeDifficulty(oceanIndex);
-  const allIds = CHARACTERS.map((c) => c.id);
-  levels.push({
-    id: `level-${startLevel + 5}`,
-    number: startLevel + 5,
-    localNumber: 6,
-    mode: "challenge",
-    title: isFinalOcean ? "Final Speed Challenge" : "Speed Challenge",
-    fishIds: allIds,
-    difficulty: challengeDiff,
-    meetAndLearn: false,
-    isSpeedChallenge: true,
-    isFriendsMatch: false,
-    targetScore: 120 + oceanIndex * 35,
-    timeLimit: Math.max(20, 40 - oceanIndex * 3),
-  });
-
-  const friendIds = friendsFishIds(matchFishLists, oceanIndex);
-  levels.push({
-    id: `level-${startLevel + 6}`,
-    number: startLevel + 6,
-    localNumber: 7,
-    mode: "friends",
-    title: "Match the Ocean Friends",
-    fishIds: friendIds,
-    difficulty: friendsDifficulty(oceanIndex, friendIds.length),
-    meetAndLearn: false,
-    isSpeedChallenge: false,
-    isFriendsMatch: true,
-  });
-
   return levels;
 }
 
 export const OCEANS: Ocean[] = OCEAN_DEFS.map((def, i) => {
-  const startLevel = i * LEVELS_PER_OCEAN + 1;
-  const isFinal = i === OCEAN_DEFS.length - 1;
+  const hero = CHARACTERS.find((c) => c.id === def.heroId) ?? CHARACTERS[0]!;
   return {
     id: def.id,
     name: def.name,
     tagline: def.tagline,
+    habitat: def.habitat,
     accent: def.accent,
     gradient: def.gradient,
     bg: def.bg,
+    badge: def.badge,
     difficultyLabel: def.difficultyLabel,
-    character: CHARACTERS[def.characterIndex % CHARACTERS.length]!,
-    levels: buildLevels(i, startLevel, isFinal),
+    character: hero,
+    rosterIds: def.rosterIds,
+    levels: buildLevels(def, i, i * LEVELS_PER_OCEAN + 1),
   };
 });
 
@@ -405,8 +538,20 @@ export function getCharacter(id: string): Character | undefined {
 
 export function getLevelFish(level: Level): Character[] {
   return level.fishIds
+    .filter(isMatchFish)
     .map((id) => getCharacter(id))
     .filter((c): c is Character => Boolean(c));
+}
+
+export function getLevelDistractors(level: Level): Character[] {
+  return (level.distractorIds ?? [])
+    .filter(isMatchFish)
+    .map((id) => getCharacter(id))
+    .filter((c): c is Character => Boolean(c));
+}
+
+export function getOceanRoster(ocean: Ocean): Character[] {
+  return ocean.rosterIds.map((id) => getCharacter(id)).filter((c): c is Character => Boolean(c));
 }
 
 export function getLevel(oceanId: string, levelId: string): { ocean: Ocean; level: Level } | undefined {
@@ -430,13 +575,23 @@ export function getPreviousLevel(levelNumber: number): { ocean: Ocean; level: Le
   return getLevelByNumber(levelNumber - 1);
 }
 
-/** Next playable level after this one (may be in the following ocean). */
 export function getNextLevel(levelNumber: number): { ocean: Ocean; level: Level } | undefined {
   return getLevelByNumber(levelNumber + 1);
 }
 
 export function getCharactersUpTo(oceanIndex: number): Character[] {
-  return CHARACTERS.slice(0, Math.max(1, oceanIndex + 1));
+  const seen = new Set<string>();
+  const list: Character[] = [];
+  for (const ocean of OCEANS.slice(0, Math.max(1, oceanIndex + 1))) {
+    for (const id of ocean.rosterIds) {
+      if (seen.has(id)) continue;
+      const c = getCharacter(id);
+      if (!c) continue;
+      seen.add(id);
+      list.push(c);
+    }
+  }
+  return list;
 }
 
 export const GAP_CLASS: Record<GapSize, string> = {
@@ -452,3 +607,5 @@ export const DIFFICULTY_COLORS: Record<OceanDifficulty, string> = {
   Hard: "#FF9A8B",
   Expert: "#A8D8EA",
 };
+
+export const OCEAN_JOURNEY_ORDER = OCEAN_DEFS.map((d) => d.id);

@@ -85,7 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "Dive into a world of wonder with kids ages 4-8." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#0A2F7A" },
+      { name: "theme-color", content: "#1E8BC8" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -95,7 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Luckiest+Guy&family=Nunito:wght@400;600;700;800&display=swap",
       },
     ],
   }),
@@ -107,11 +107,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" style={{ overflow: "hidden", height: "100%", backgroundColor: "#061846" }}>
+    <html lang="en" style={{ overflow: "hidden", height: "100%", backgroundColor: "#1E8BC8" }}>
       <head>
         <HeadContent />
       </head>
-      <body style={{ overflow: "hidden", height: "100%", margin: 0, backgroundColor: "#061846" }}>
+      <body style={{ overflow: "hidden", height: "100%", margin: 0, backgroundColor: "#1E8BC8" }}>
         {children}
         <Scripts />
       </body>

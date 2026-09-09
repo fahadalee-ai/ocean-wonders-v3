@@ -22,7 +22,11 @@ const PROFILE_KEY = "ow:profile";
 const DISCOVERIES_KEY = "ow:discoveries";
 const BADGES_KEY = "ow:badges";
 const ONBOARDED_KEY = "ow:onboarded";
-const LEVELS_KEY = "ow:levels";
+const LEVELS_KEY = "ow:levels:v2";
+const COINS_KEY = "ow:coins";
+const SHOP_KEY = "ow:shop";
+const MUTE_KEY = "ow:mute";
+const EQUIP_KEY = "ow:equipped";
 
 function safeGet(key: string): string | null {
   if (typeof window === "undefined") return null;
@@ -76,9 +80,88 @@ export function deleteAccountData() {
     window.localStorage.removeItem(BADGES_KEY);
     window.localStorage.removeItem(ONBOARDED_KEY);
     window.localStorage.removeItem(LEVELS_KEY);
+    window.localStorage.removeItem(COINS_KEY);
+    window.localStorage.removeItem(SHOP_KEY);
+    window.localStorage.removeItem(EQUIP_KEY);
   } catch {
     /* ignore */
   }
+}
+
+export function getCoins(): number {
+  const raw = safeGet(COINS_KEY);
+  const n = raw ? Number(raw) : 0;
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+}
+
+export function addCoins(amount: number): number {
+  const next = getCoins() + Math.max(0, Math.floor(amount));
+  safeSet(COINS_KEY, String(next));
+  return next;
+}
+
+export function spendCoins(amount: number): boolean {
+  const cost = Math.max(0, Math.floor(amount));
+  const have = getCoins();
+  if (have < cost) return false;
+  safeSet(COINS_KEY, String(have - cost));
+  return true;
+}
+
+export function getOwnedItems(): string[] {
+  const raw = safeGet(SHOP_KEY);
+  if (!raw) return [];
+  try {
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export function ownItem(id: string): string[] {
+  const set = new Set(getOwnedItems());
+  set.add(id);
+  const arr = [...set];
+  safeSet(SHOP_KEY, JSON.stringify(arr));
+  return arr;
+}
+
+export function hasItem(id: string): boolean {
+  return getOwnedItems().includes(id);
+}
+
+export function getEquipped(): Record<string, string> {
+  const raw = safeGet(EQUIP_KEY);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw) as Record<string, string>;
+  } catch {
+    return {};
+  }
+}
+
+export function equipItem(slot: string, id: string) {
+  const next = { ...getEquipped(), [slot]: id };
+  safeSet(EQUIP_KEY, JSON.stringify(next));
+}
+
+export function isMuted(): boolean {
+  return safeGet(MUTE_KEY) === "1";
+}
+
+export function setMuted(muted: boolean) {
+  safeSet(MUTE_KEY, muted ? "1" : "0");
+}
+
+export function toggleMuted(): boolean {
+  const next = !isMuted();
+  setMuted(next);
+  return next;
+}
+
+/** Stars from a level award coins (never spends). */
+export function awardLevelRewards(stars: number): number {
+  return addCoins(5 + Math.max(1, stars) * 10);
 }
 
 export function getDiscoveries(): string[] {

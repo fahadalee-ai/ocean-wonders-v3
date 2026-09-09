@@ -1,21 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Star, Trophy, Waves } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useState, type ReactNode } from "react";
+import { ArrowLeft, HelpCircle, Settings, Star, Trophy, Waves } from "lucide-react";
+import kidBoy from "@/assets/kid-diver-boy.png";
+import kidGirl from "@/assets/kid-diver-girl.png";
+import sceneReef from "@/assets/scene-reef.jpg";
 import { OCEANS, TOTAL_LEVELS } from "@/data/oceans";
-import { BackButton, PAGE_HEADER_PAD } from "@/components/BackBubble";
+import { COPY } from "@/data/content";
+import { AuthOceanBackground } from "@/components/AuthOceanBackground";
+import { GoldTitle } from "@/components/ChunkyTitle";
 import { GlossyButton } from "@/components/GlossyButton";
-import { MapOceanLife } from "@/components/MapOceanLife";
-import { OceanSelectBar } from "@/components/OceanSelectBar";
+import { KnockoutImg } from "@/components/KnockoutImg";
 import { OceanWorldMap } from "@/components/OceanWorldMap";
+import { SoundToggle } from "@/components/SoundToggle";
 import { useOceanSelection } from "@/hooks/useOceanSelection";
-import {
-  getGlobalStats,
-  getOceanStats,
-  getProfile,
-  type AvatarId,
-} from "@/lib/progress";
-import { avatarSrc } from "@/lib/avatars";
+import { getCoins, getGlobalStats, getOceanStats } from "@/lib/progress";
+import { playSfx } from "@/lib/sfx";
 
 export const Route = createFileRoute("/globe")({
   head: () => ({
@@ -43,125 +43,233 @@ function OceanSelectPage() {
     oceansCleared: 0,
     totalOceans: OCEANS.length,
   });
-  const [profileNick, setProfileNick] = useState("Explorer");
-  const [avatarId, setAvatarId] = useState<AvatarId | undefined>(undefined);
-  const [oceanStats, setOceanStats] = useState<
-    Record<string, ReturnType<typeof getOceanStats>>
-  >({});
+  const [oceanStats, setOceanStats] = useState<Record<string, ReturnType<typeof getOceanStats>>>({});
+  const [coins, setCoins] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     setStats(getGlobalStats());
-    const p = getProfile();
-    if (p?.nickname) setProfileNick(p.nickname);
-    if (p?.avatar) setAvatarId(p.avatar);
+    setCoins(getCoins());
     const map: Record<string, ReturnType<typeof getOceanStats>> = {};
     for (const o of OCEANS) map[o.id] = getOceanStats(o);
     setOceanStats(map);
   }, []);
 
-  const selectedOcean = OCEANS.find((o) => o.id === selectedId) ?? null;
-
   function handlePick(oceanId: string, unlocked: boolean) {
     if (!unlocked) return;
     selectOcean(oceanId, unlocked);
-  }
-
-  function handleSelectOcean() {
-    if (!selectedOcean) return;
-    navigate({ to: "/ocean/$oceanId", params: { oceanId: selectedOcean.id } });
+    navigate({ to: "/ocean/$oceanId", params: { oceanId } });
   }
 
   return (
-    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#0A1A3A" }}>
-      <OceanWorldMap selectedId={selectedId} rippleKey={rippleKey} />
-      <MapOceanLife fishCount={6} bubbleCount={16} />
+    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#1E8BC8" }}>
+      <AuthOceanBackground fishCount={0} />
 
-      <div
-        className="pointer-events-none absolute inset-0 z-[1]"
+      <span
+        className="absolute right-5 top-[max(0.55rem,env(safe-area-inset-top))] z-30 rounded-full border-2 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white sm:right-6 sm:text-xs"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(4,16,40,0.55) 0%, transparent 22%, transparent 72%, rgba(4,16,40,0.65) 100%)",
+          fontFamily: '"Baloo 2", sans-serif',
+          background: "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)",
+          borderColor: "#FFFFFF",
+          boxShadow: "0 4px 0 #062A66, 0 8px 14px rgba(0,20,60,0.28)",
         }}
-      />
-
-      <header
-        className={`relative z-30 mx-auto flex w-full max-w-6xl shrink-0 items-center justify-between gap-3 py-2 pt-[max(0.5rem,env(safe-area-inset-top))] ${PAGE_HEADER_PAD} md:px-8`}
       >
-        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-          <BackButton to="/" label="Back to splash" />
-          <div
-            className="flex min-w-0 items-center gap-2.5 rounded-full border px-2.5 py-1.5 sm:px-3 sm:py-2"
+        {COPY.ageRange}
+      </span>
+
+      <div className="relative z-20 flex shrink-0 flex-col items-center px-16 pb-2 pt-[max(0.45rem,env(safe-area-inset-top))]">
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.92 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 380, damping: 18 }}
+          className="flex flex-col items-center"
+        >
+          <GoldTitle text={COPY.exploreTitle} size="sm" />
+          <span
+            className="mt-2 rounded-full border-[3px] px-4 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-white sm:text-sm"
             style={{
-              background: "rgba(6, 24, 70, 0.82)",
-              borderColor: "rgba(94, 212, 255, 0.45)",
-              boxShadow: "0 8px 20px rgba(0,12,40,0.35)",
+              fontFamily: '"Baloo 2", sans-serif',
+              background: "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)",
+              borderColor: "#FFFFFF",
+              boxShadow: "0 4px 0 #062A66, 0 8px 14px rgba(0,20,60,0.25)",
             }}
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white bg-white">
-              <img src={avatarSrc(avatarId)} alt="" className="h-7 w-7 object-contain" draggable={false} />
-            </div>
-            <div className="min-w-0 pr-1">
-              <div className="truncate font-display text-base font-bold leading-tight text-white">
-                Hi, {profileNick}!
-              </div>
-              <div className="truncate text-[11px] font-semibold text-white/70">
-                Pick an ocean, then tap Select
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex shrink-0 gap-2">
-          <StatPill icon={<Waves className="h-3.5 w-3.5" />} value={`${stats.completed}/${stats.total}`} label="Levels" />
-          <StatPill icon={<Star className="h-3.5 w-3.5" />} value={`${stats.stars}`} label="Stars" />
-          <StatPill icon={<Trophy className="h-3.5 w-3.5" />} value={`${stats.oceansCleared}/${stats.totalOceans}`} label="Oceans" />
-        </div>
-      </header>
-
-      <div className="relative z-20 shrink-0 px-4 pb-1 text-center">
-        <h1
-          className="font-display text-xl font-bold uppercase tracking-[0.04em] text-white sm:text-2xl md:text-[1.75rem]"
-          style={{ textShadow: "0 2px 12px rgba(0,20,60,0.55)" }}
-        >
-          Explore the World Map!
-        </h1>
+            {COPY.selectOcean}
+          </span>
+        </motion.div>
       </div>
 
-      {/* Spacer keeps the map visible between header and ocean bar */}
-      <div className="relative z-10 min-h-0 flex-1" />
-
-      <div className="relative z-30 mx-auto flex w-full max-w-6xl shrink-0 flex-col items-center gap-2.5 px-4 pb-[max(0.85rem,env(safe-area-inset-bottom))] pt-1 sm:px-6">
-        <AnimatePresence mode="wait">
-          {selectedOcean && (
-            <motion.div
-              key={selectedOcean.id}
-              initial={{ opacity: 0, y: 10, scale: 0.94 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className="w-full max-w-[280px]"
-            >
-              <GlossyButton
-                variant="orange"
-                size="md"
-                fullWidth
-                onClick={handleSelectOcean}
-                className="max-w-none"
-              >
-                Select {selectedOcean.name.replace(" Ocean", "")}
-              </GlossyButton>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <OceanSelectBar
-          oceans={OCEANS}
-          oceanStats={oceanStats}
+      <div className="relative z-20 flex min-h-0 flex-1 items-center justify-center px-[max(5.25rem,11vw)] pb-[5.6rem] pt-2">
+        <OceanWorldMap
           selectedId={selectedId}
-          onSelect={handlePick}
+          rippleKey={rippleKey}
+          oceanStats={oceanStats}
+          onPick={handlePick}
         />
       </div>
+
+      <motion.div
+        className="pointer-events-none absolute bottom-[max(4.6rem,calc(env(safe-area-inset-bottom)+3.1rem))] left-5 z-[8] w-[min(18vw,168px)]"
+        initial={{ opacity: 0, x: -24 }}
+        animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+        transition={{
+          opacity: { duration: 0.4 },
+          x: { type: "spring", stiffness: 260, damping: 18 },
+          y: { duration: 3.2, repeat: Infinity, ease: "easeInOut", delay: 0.5 },
+        }}
+      >
+        <KnockoutImg
+          src={kidBoy}
+          alt=""
+          className="h-auto w-full select-none object-contain drop-shadow-[0_10px_16px_rgba(0,20,50,0.35)]"
+          draggable={false}
+        />
+      </motion.div>
+      <motion.div
+        className="pointer-events-none absolute bottom-[max(4.6rem,calc(env(safe-area-inset-bottom)+3.1rem))] right-5 z-[8] w-[min(18vw,168px)] -scale-x-100"
+        initial={{ opacity: 0, x: 24 }}
+        animate={{ opacity: 1, x: 0, y: [0, -7, 0] }}
+        transition={{
+          opacity: { duration: 0.4 },
+          x: { type: "spring", stiffness: 260, damping: 18 },
+          y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.7 },
+        }}
+      >
+        <KnockoutImg
+          src={kidGirl}
+          alt=""
+          className="h-auto w-full select-none object-contain drop-shadow-[0_10px_16px_rgba(0,20,50,0.35)]"
+          draggable={false}
+        />
+      </motion.div>
+
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-[26%] overflow-hidden"
+        aria-hidden
+        style={{
+          WebkitMaskImage: "linear-gradient(to top, #000 42%, transparent 100%)",
+          maskImage: "linear-gradient(to top, #000 42%, transparent 100%)",
+        }}
+      >
+        <img
+          src={sceneReef}
+          alt=""
+          className="absolute bottom-0 left-0 h-[380%] w-full object-cover object-bottom"
+          draggable={false}
+        />
+      </div>
+
+      <div className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-5 z-30">
+        <GlossyButton
+          variant="blue"
+          size="sm"
+          to="/"
+          onClick={() => playSfx("tap")}
+          className="max-w-[148px] gap-1.5"
+        >
+          <ArrowLeft className="h-4 w-4" strokeWidth={3} />
+          Back
+        </GlossyButton>
+      </div>
+
+      <div className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-5 z-30 flex items-end gap-2">
+        <GlossyButton
+          variant="blue"
+          size="sm"
+          onClick={() => {
+            playSfx("tap");
+            setSettingsOpen(true);
+          }}
+          className="max-w-[168px]"
+        >
+          <Settings className="h-4 w-4" strokeWidth={2.6} />
+          Settings
+        </GlossyButton>
+        <button
+          type="button"
+          onClick={() => {
+            playSfx("tap");
+            setHelpOpen(true);
+          }}
+          className="flex flex-col items-center"
+          aria-label="Help"
+        >
+          <span
+            className="flex h-11 w-11 items-center justify-center rounded-full border-[3px] border-white"
+            style={{
+              background: "linear-gradient(180deg, #5ED4FF 0%, #1A8FD4 100%)",
+              boxShadow: "0 4px 0 #0E5A9A, 0 8px 14px rgba(0,20,60,0.3)",
+            }}
+          >
+            <HelpCircle className="h-5 w-5 text-white" strokeWidth={2.6} />
+          </span>
+        </button>
+      </div>
+
+      {helpOpen && (
+        <Overlay onClose={() => setHelpOpen(false)}>
+          <h2 className="text-2xl font-extrabold text-[#0B3D91]" style={{ fontFamily: '"Luckiest Guy", sans-serif' }}>
+            How to play
+          </h2>
+          <p className="mt-2 text-sm font-bold leading-relaxed text-[#0B3D91]/80">
+            Tap a glowing ocean badge to dive in. Drag each sea friend from the inventory onto its matching shadow.
+            Finish an ocean to unlock the next one. Stars and coins never punish — they just celebrate how you did!
+          </p>
+          <button
+            type="button"
+            className="mt-4 font-display text-sm font-bold underline"
+            style={{ color: "#0B3D91" }}
+            onClick={() => setHelpOpen(false)}
+          >
+            Got it!
+          </button>
+        </Overlay>
+      )}
+
+      {settingsOpen && (
+        <Overlay onClose={() => setSettingsOpen(false)}>
+          <h2 className="text-2xl font-extrabold text-[#0B3D91]" style={{ fontFamily: '"Luckiest Guy", sans-serif' }}>
+            Settings
+          </h2>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <StatPill icon={<Waves className="h-3.5 w-3.5" />} value={`${stats.completed}/${stats.total}`} label="Levels" />
+            <StatPill icon={<Star className="h-3.5 w-3.5" />} value={`${stats.stars}`} label="Stars" />
+            <StatPill icon={<Trophy className="h-3.5 w-3.5" />} value={`${coins}`} label="Coins" />
+            <SoundToggle />
+          </div>
+          <button
+            type="button"
+            className="mt-4 font-display text-sm font-bold underline"
+            style={{ color: "#0B3D91" }}
+            onClick={() => setSettingsOpen(false)}
+          >
+            Close
+          </button>
+        </Overlay>
+      )}
     </main>
+  );
+}
+
+function Overlay({ children, onClose }: { children: ReactNode; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-4"
+      style={{ backgroundColor: "rgba(6,24,70,0.6)" }}
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-3xl border-2 p-5 text-left"
+        style={{
+          background: "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(186,232,255,0.9))",
+          borderColor: "#FFFFFF",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -170,17 +278,17 @@ function StatPill({
   value,
   label,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   value: string;
   label: string;
 }) {
   return (
     <div
-      className="flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-white"
+      className="flex items-center gap-2 rounded-full border-2 px-2.5 py-1.5 text-[#0B3D91]"
       style={{
-        background: "rgba(6, 24, 70, 0.82)",
-        borderColor: "rgba(94, 212, 255, 0.4)",
-        boxShadow: "0 6px 14px rgba(0,12,40,0.3)",
+        background: "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(186,232,255,0.75))",
+        borderColor: "#FFFFFF",
+        boxShadow: "0 6px 14px rgba(0,30,70,0.16)",
       }}
     >
       <span
@@ -193,8 +301,10 @@ function StatPill({
         {icon}
       </span>
       <div className="leading-tight">
-        <div className="font-display text-xs font-bold sm:text-sm">{value}</div>
-        <div className="text-[9px] font-bold uppercase tracking-wider text-white/70">{label}</div>
+        <div className="text-xs font-extrabold sm:text-sm" style={{ fontFamily: '"Baloo 2", sans-serif' }}>
+          {value}
+        </div>
+        <div className="text-[9px] font-bold uppercase tracking-wider text-[#0B3D91]/65">{label}</div>
       </div>
     </div>
   );

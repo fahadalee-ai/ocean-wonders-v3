@@ -876,7 +876,7 @@
   <script>
     (function () {
       // Configuration & Defaults
-      const PRODUCTION_URL = "https://demo.sourapps.com/ocean-wonders-v2/";
+      const PRODUCTION_URL = "https://demo.sourapps.com/ocean-wonders-v3/";
       const themes = ["dark", "blueprint", "light"];
       let currentThemeIndex = 0;
       let currentMode = "landscape"; // "landscape", "portrait", "ipad", "fullscreen"
@@ -912,23 +912,16 @@
         }
 
         if (window.location.protocol === "file:") {
-          return "http://localhost:8083/ocean-wonders-v2/";
+          return "http://localhost:8080/";
         }
 
-        // Check if running on localhost / 127.0.0.1
-        const isLocal = window.location.hostname === "localhost" || 
-                        window.location.hostname === "127.0.0.1";
-
-        if (isLocal) {
-          return `${window.location.origin}/ocean-wonders-v2/`;
-        }
-
-        // If accessed directly on demo.sourapps.com
+        // Nginx demo still hosts the app under /ocean-wonders-v3/
         if (window.location.hostname === "demo.sourapps.com") {
-          return `${window.location.origin}/ocean-wonders-v2/`;
+          return `${window.location.origin}/ocean-wonders-v3/`;
         }
 
-        return PRODUCTION_URL;
+        // Vercel, localhost, and any other host serve the app at /
+        return `${window.location.origin}/`;
       }
 
       let activeUrl = resolveTargetUrl("auto");

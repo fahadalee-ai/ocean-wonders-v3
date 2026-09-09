@@ -13,30 +13,34 @@ type Props = {
   size?: GlossySize;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
-  /** Stretch to container width (drops the default max-width). */
   fullWidth?: boolean;
 };
 
-const SIZE: Record<GlossySize, { padding: string; minHeight: number }> = {
-  sm: { padding: "px-4 py-2 text-sm sm:text-base", minHeight: 42 },
-  md: { padding: "px-5 py-2.5 text-base sm:text-lg", minHeight: 48 },
-  lg: { padding: "px-6 py-4 text-lg sm:text-xl", minHeight: 58 },
-  xl: { padding: "px-8 py-4 text-xl sm:text-2xl", minHeight: 64 },
+const SIZE: Record<GlossySize, { padding: string; minHeight: number; radius: number }> = {
+  sm: { padding: "px-4 py-1.5 text-sm sm:text-base", minHeight: 40, radius: 22 },
+  md: { padding: "px-5 py-2 text-base sm:text-lg", minHeight: 46, radius: 26 },
+  lg: { padding: "px-7 py-3 text-lg sm:text-xl", minHeight: 56, radius: 32 },
+  xl: { padding: "px-8 py-3.5 text-xl sm:text-2xl", minHeight: 64, radius: 36 },
 };
 
-/** Shared glossy pill look (Splash / auth / game CTAs). */
+/** Candy bubble CTA — glossy highlight, thick white rim, no old stripe chrome. */
 export function glossyButtonStyle(variant: GlossyVariant = "blue", size: GlossySize = "lg"): CSSProperties {
   const isOrange = variant === "orange";
   return {
     minHeight: SIZE[size].minHeight,
-    border: isOrange ? "3px solid #E85A1A" : "3px solid #1A6BB5",
+    borderRadius: SIZE[size].radius,
+    border: "4px solid #FFFFFF",
     background: isOrange
-      ? "linear-gradient(180deg, #FFB347 0%, #FF8C2A 45%, #F06A12 100%)"
-      : "linear-gradient(180deg, #5ED4FF 0%, #2EB8F0 45%, #1A8FD4 100%)",
+      ? "linear-gradient(180deg, #FFD36A 0%, #FF9A2E 42%, #FF7A12 100%)"
+      : "linear-gradient(180deg, #8CECFF 0%, #3EC6F5 48%, #1AA8E8 100%)",
     boxShadow: isOrange
-      ? "0 6px 0 #C44A10, 0 10px 20px rgba(0,40,90,0.35), inset 0 2px 0 rgba(255,255,255,0.45)"
-      : "0 6px 0 #0E5A9A, 0 10px 20px rgba(0,40,90,0.35), inset 0 2px 0 rgba(255,255,255,0.4)",
-    textShadow: "0 2px 0 rgba(0,0,0,0.25)",
+      ? "0 5px 0 #C85A10, 0 12px 22px rgba(10,40,90,0.28), inset 0 3px 0 rgba(255,255,255,0.55)"
+      : "0 5px 0 #0D6BA8, 0 12px 22px rgba(10,40,90,0.28), inset 0 3px 0 rgba(255,255,255,0.6)",
+    color: "#FFFFFF",
+    WebkitTextStroke: "3px #0B3D91",
+    paintOrder: "stroke fill",
+    textShadow: "0 2px 0 rgba(255,255,255,0.25)",
+    fontFamily: '"Baloo 2", ui-rounded, sans-serif',
   };
 }
 
@@ -53,15 +57,11 @@ export function GlossyButton({
 }: Props) {
   const { padding } = SIZE[size];
   const hasCustomMax = /\bmax-w-/.test(className) || fullWidth;
-  const widthClass = fullWidth
-    ? "w-full max-w-none"
-    : hasCustomMax
-      ? "w-full"
-      : "w-full max-w-[320px]";
+  const widthClass = fullWidth ? "w-full max-w-none" : hasCustomMax ? "w-full" : "w-full max-w-[320px]";
 
   const baseClass =
-    `relative inline-flex items-center justify-center gap-1.5 overflow-hidden rounded-full whitespace-nowrap ${padding} ${widthClass} ` +
-    "font-display font-bold uppercase tracking-wide text-white " +
+    `relative inline-flex items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap ${padding} ${widthClass} ` +
+    "font-bold uppercase tracking-wide " +
     "transition-transform active:translate-y-[2px] active:scale-[0.98] disabled:opacity-60 " +
     className;
 
@@ -71,11 +71,8 @@ export function GlossyButton({
     <>
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-25"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(-45deg, transparent, transparent 8px, rgba(255,255,255,0.35) 8px, rgba(255,255,255,0.35) 16px)",
-        }}
+        className="pointer-events-none absolute inset-x-[12%] top-[8%] h-[38%] rounded-full"
+        style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0))" }}
       />
       <span className="relative z-10 flex items-center justify-center gap-1.5">{children}</span>
     </>

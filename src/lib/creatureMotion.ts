@@ -7,6 +7,8 @@ export function creatureMotionKind(characterId: string): CreatureMotionKind {
   switch (characterId) {
     case "whale":
     case "orca":
+    case "beluga":
+    case "narwhal":
       return "breach";
     case "seaturtle":
       return "dive";
@@ -20,6 +22,30 @@ export function creatureMotionKind(characterId: string): CreatureMotionKind {
     case "shark":
     default:
       return "swim";
+  }
+}
+
+/** One-shot happy move on a correct match. Plays once (~0.7s), never loops. */
+export function creatureCelebrateOnce(characterId: string): TargetAndTransition {
+  const kind = creatureMotionKind(characterId);
+  const once = { duration: 0.72, ease: "easeOut" as const };
+  switch (kind) {
+    case "dive":
+      return { y: [0, -6, 5, -4, 0], rotate: [0, -14, 10, -6, 0], transition: once };
+    case "scuttle":
+      return { x: [0, 10, -10, 8, -6, 0], y: [0, -4, 0, -3, 0], rotate: [0, -8, 8, -5, 0], transition: once };
+    case "bloom":
+      return { scale: [1, 1.14, 0.94, 1.08, 1], rotate: [0, -12, 12, -6, 0], transition: once };
+    case "breach":
+      return { y: [0, -16, 2, -8, 0], rotate: [0, -8, 6, 0], scale: [1, 1.08, 1], transition: once };
+    case "swim":
+    default:
+      return {
+        y: [0, -12, 3, -6, 0],
+        rotate: [0, 16, -18, 10, 0],
+        scale: [1, 1.1, 1, 1.04, 1],
+        transition: once,
+      };
   }
 }
 

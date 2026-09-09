@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Character } from "@/data/oceans";
+import { useKnockoutSrc } from "@/components/KnockoutImg";
 import { GlossyButton } from "@/components/GlossyButton";
 import { addDiscovery, getDiscoveries } from "@/lib/progress";
 import { sparkleAt } from "@/lib/confetti";
@@ -14,6 +15,7 @@ export function CreatureModal({
   onClose: () => void;
 }) {
   const [discovered, setDiscovered] = useState(false);
+  const creatureSrc = useKnockoutSrc(creature?.img ?? "");
 
   useEffect(() => {
     if (creature) {
@@ -51,7 +53,7 @@ export function CreatureModal({
 
             <div className="mx-auto flex h-56 w-56 items-center justify-center">
               <motion.img
-                src={creature.img}
+                src={creatureSrc || creature.img}
                 alt={creature.name}
                 width={512}
                 height={512}
@@ -64,6 +66,14 @@ export function CreatureModal({
             <h2 className="mt-2 font-display text-4xl font-bold" style={{ color: "#0B3D91" }}>
               {creature.name}!
             </h2>
+
+            {(creature.habitat || creature.diet) && (
+              <p className="mt-2 text-sm font-bold" style={{ color: "#0B3D91" }}>
+                {creature.habitat ? `Habitat: ${creature.habitat}` : ""}
+                {creature.habitat && creature.diet ? " · " : ""}
+                {creature.diet ? `Diet: ${creature.diet}` : ""}
+              </p>
+            )}
 
             <div
               className="relative mt-4 rounded-3xl border-4 border-white p-4 text-left text-lg font-semibold"

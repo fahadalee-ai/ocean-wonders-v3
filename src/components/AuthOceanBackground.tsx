@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import bgSplash from "@/assets/bg.png";
+import sceneReef from "@/assets/scene-reef.jpg";
 import char1 from "@/assets/Characters_1.png";
 import char2 from "@/assets/Characters_2.png";
 import char3 from "@/assets/Characters_3.png";
@@ -11,108 +11,88 @@ import char7 from "@/assets/Characters_7.png";
 import char8 from "@/assets/Characters_8.png";
 import char9 from "@/assets/Characters_9.png";
 
-const FISH_IMGS = [char1, char2, char3, char4, char5, char6, char7, char8, char9];
+/** Native art facing: 1 = looks right (swim LTR), -1 = looks left (swim RTL). Never flip the sprite. */
+const FISH_SPRITES: { img: string; face: 1 | -1 }[] = [
+  { img: char1, face: -1 }, // whale — faces left
+  { img: char2, face: 1 }, // clownfish — faces right
+  { img: char3, face: 1 }, // crab — front-facing, drift LTR
+  { img: char4, face: -1 }, // dolphin — faces left
+  { img: char5, face: 1 }, // octopus — faces right
+  { img: char6, face: -1 }, // seahorse — faces left
+  { img: char7, face: -1 }, // turtle — faces left
+  { img: char8, face: -1 }, // shark — faces left
+  { img: char9, face: 1 }, // orca — faces right
+];
+
+/** Distinct size bands so the school fills the screen (tiny → hero). */
+const SIZE_VW = [4.2, 5.5, 7, 8.5, 10.5, 13, 16, 6.2, 11.5, 14.5, 5, 9, 12, 7.8];
 
 type SwimFish = {
   id: number;
   img: string;
+  face: 1 | -1;
   top: number;
-  size: number;
+  sizeVw: number;
   duration: number;
   delay: number;
-  direction: 1 | -1;
   opacity: number;
   bob: number;
-};
-
-type Bubble = {
-  id: number;
-  left: number;
-  size: number;
-  duration: number;
-  delay: number;
+  z: number;
 };
 
 /**
- * Shared animated ocean backdrop for Splash / Login / Register:
- * slow drifting bg.png + swimming fish + rising bubbles.
+ * Illustrated reef backdrop + full-screen fish that swim the way their art faces.
  */
-export function AuthOceanBackground({ fishCount = 7 }: { fishCount?: number }) {
+export function AuthOceanBackground({ fishCount = 14 }: { fishCount?: number }) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   const fish = useMemo(() => {
     if (!mounted) return [] as SwimFish[];
     return Array.from({ length: fishCount }).map((_, i) => {
-      const direction: 1 | -1 = i % 2 === 0 ? 1 : -1;
+      const sizeVw = SIZE_VW[i % SIZE_VW.length]!;
+      const sprite = FISH_SPRITES[i % FISH_SPRITES.length]!;
+      const large = sizeVw >= 11;
       return {
         id: i,
-        img: FISH_IMGS[i % FISH_IMGS.length]!,
-        top: 12 + ((i * 11) % 68),
-        size: 44 + (i % 4) * 18,
-        duration: 22 + (i % 5) * 6,
-        delay: -(i * 2.4),
-        direction,
-        opacity: 0.22 + (i % 4) * 0.08,
-        bob: 8 + (i % 3) * 4,
+        img: sprite.img,
+        face: sprite.face,
+        top: 6 + ((i * 17 + (i % 3) * 7) % 78),
+        sizeVw,
+        duration: large ? 42 + (i % 3) * 8 : 28 + (i % 5) * 6,
+        delay: -(i * 2.8),
+        opacity: large ? 0.95 : 0.55 + (i % 4) * 0.1,
+        bob: 5 + (i % 5) * 3,
+        z: large ? 6 : 3 + (i % 3),
       };
     });
   }, [mounted, fishCount]);
 
-  const bubbles = useMemo(() => {
-    if (!mounted) return [] as Bubble[];
-    return Array.from({ length: 14 }).map((_, i) => ({
-      id: i,
-      left: 5 + ((i * 7) % 90),
-      size: 5 + (i % 5) * 4,
-      duration: 8 + (i % 5) * 2.5,
-      delay: i * 0.55,
-    }));
-  }, [mounted]);
-
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ contain: "paint" }} aria-hidden>
-      {/* Fallback color */}
-      <div className="absolute inset-0" style={{ backgroundColor: "#0A2F7A" }} />
-
-      {/* Slow drifting / breathing background */}
-      <motion.div
-        className="absolute inset-[-12%]"
-        style={{
-          backgroundImage: `url(${bgSplash})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center top",
-          backgroundRepeat: "no-repeat",
-        }}
-        animate={{
-          x: [0, 18, -12, 0],
-          y: [0, -10, 8, 0],
-          scale: [1.08, 1.14, 1.1, 1.08],
-        }}
-        transition={{ duration: 48, repeat: Infinity, ease: "easeInOut" }}
+      <div className="absolute inset-0" style={{ backgroundColor: "#1E8BC8" }} />
+      <img
+        src={sceneReef}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover object-center"
+        draggable={false}
       />
-
-      {/* Theme wash */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(8,40,110,0.45) 0%, rgba(12,70,150,0.22) 40%, rgba(10,50,120,0.35) 100%)",
-        }}
-      />
-
-      {/* Soft light shimmer */}
-      <motion.div
-        className="absolute inset-x-0 top-0 h-[55%]"
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.18), transparent 60%)",
-        }}
-        animate={{ opacity: [0.35, 0.65, 0.35] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Swimming fish */}
+      {[18, 40, 62, 80].map((left, i) => (
+        <motion.div
+          key={left}
+          className="absolute top-0 h-[70%] origin-top"
+          style={{
+            left: `${left}%`,
+            width: i % 2 === 0 ? 64 : 36,
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.32) 0%, rgba(200,235,255,0.08) 45%, transparent 85%)",
+            transform: `skewX(${i % 2 === 0 ? -12 : -18}deg)`,
+            filter: "blur(1.5px)",
+          }}
+          animate={{ opacity: [0.25, 0.55, 0.3] }}
+          transition={{ duration: 5 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
       {fish.map((f) => (
         <motion.img
           key={f.id}
@@ -121,43 +101,34 @@ export function AuthOceanBackground({ fishCount = 7 }: { fishCount?: number }) {
           className="absolute object-contain"
           style={{
             top: `${f.top}%`,
-            width: f.size,
-            height: f.size,
+            width: `${f.sizeVw}vw`,
+            height: "auto",
             opacity: f.opacity,
             left: 0,
+            zIndex: f.z,
+            filter: f.sizeVw < 7 ? "saturate(0.85) brightness(1.05)" : undefined,
           }}
-          initial={false}
           animate={{
-            x: f.direction === 1 ? ["-12%", "112%"] : ["112%", "-12%"],
+            x: f.face === 1 ? ["-22vw", "118vw"] : ["118vw", "-22vw"],
             y: [0, -f.bob, f.bob * 0.6, 0],
-            scaleX: f.direction,
           }}
           transition={{
             x: { duration: f.duration, repeat: Infinity, ease: "linear", delay: f.delay },
-            y: { duration: 3.5 + (f.id % 3), repeat: Infinity, ease: "easeInOut", delay: f.delay },
-            scaleX: { duration: 0 },
+            y: { duration: 4.8 + (f.id % 4) * 0.6, repeat: Infinity, ease: "easeInOut", delay: f.delay },
           }}
           draggable={false}
         />
       ))}
-
-      {/* Rising bubbles */}
-      {bubbles.map((b) => (
-        <motion.span
-          key={b.id}
-          className="absolute rounded-full border border-white/45 bg-white/25"
+      {Array.from({ length: 16 }).map((_, i) => (
+        <span
+          key={i}
+          className="bubble"
           style={{
-            width: b.size,
-            height: b.size,
-            left: `${b.left}%`,
-            bottom: "-4%",
-          }}
-          animate={{ y: [0, "-120%"], opacity: [0.55, 0], x: [0, (b.id % 2 === 0 ? 18 : -14)] }}
-          transition={{
-            duration: b.duration,
-            repeat: Infinity,
-            delay: b.delay,
-            ease: "easeOut",
+            left: `${5 + ((i * 6) % 90)}%`,
+            width: 7 + (i % 5) * 4,
+            height: 7 + (i % 5) * 4,
+            animationDuration: `${8 + (i % 5) * 2}s`,
+            animationDelay: `${i * 0.4}s`,
           }}
         />
       ))}

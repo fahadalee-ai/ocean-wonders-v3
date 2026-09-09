@@ -1,0 +1,67 @@
+{
+  "copy": {
+    "appName": "Ocean Wonders",
+    "subtitle": "Discovering God's Undersea World",
+    "seaFriends": "SEA FRIENDS",
+    "playGame": "Play Game",
+    "aboutOceanLife": "About Ocean Life",
+    "shop": "Shop",
+    "exploreTitle": "Explore the World's Oceans",
+    "selectOcean": "Kids: Select any ocean!",
+    "ageRange": "Age 5-10",
+    "fishMatching": "Fish Matching Game",
+    "inventory": "Fish Inventory",
+    "playArea": "Ocean Play Area",
+    "greatJob": "GREAT JOB! YOU DID IT!",
+    "goodJobPop": "Good Job!",
+    "oceanComplete": "Ocean Complete!",
+    "nextLevel": "Next Level",
+    "replay": "Replay",
+    "backToMap": "Back to Map",
+    "myBadges": "My Badges"
+  },
+  "shopItems": [
+    {
+      "id": "mascot-crab",
+      "title": "Sunny Crab Mascot",
+      "kind": "mascot",
+      "cost": 40,
+      "blurb": "A cheerful crab friend for your menu!"
+    },
+    {
+      "id": "mascot-turtle",
+      "title": "Wave Turtle Mascot",
+      "kind": "mascot",
+      "cost": 40,
+      "blurb": "A waving sea turtle for the splash screen."
+    },
+    {
+      "id": "bg-sunset-reef",
+      "title": "Sunset Reef Theme",
+      "kind": "background",
+      "cost": 60,
+      "blurb": "Warm golden light over a coral garden."
+    },
+    {
+      "id": "bg-ice-glow",
+      "title": "Ice Glow Theme",
+      "kind": "background",
+      "cost": 60,
+      "blurb": "Sparkly cold-water light shafts."
+    },
+    {
+      "id": "stickers-reef",
+      "title": "Reef Sticker Pack",
+      "kind": "stickers",
+      "cost": 25,
+      "blurb": "Clownfish, shells, and coral stickers."
+    },
+    {
+      "id": "stickers-ice",
+      "title": "Ice Friends Stickers",
+      "kind": "stickers",
+      "cost": 25,
+      "blurb": "Penguins, seals, and snowflake stickers."
+    }
+  ]
+}

@@ -6,12 +6,12 @@ export type RoundIconVariant = "orange" | "blue";
 
 const VARIANT_STYLE: Record<RoundIconVariant, CSSProperties> = {
   orange: {
-    background: "linear-gradient(180deg, #FFB347 0%, #FF8C2A 45%, #F06A12 100%)",
-    boxShadow: "0 5px 0 #C44A10, 0 10px 18px rgba(0,20,60,0.35), inset 0 2px 0 rgba(255,255,255,0.4)",
+    background: "linear-gradient(180deg, #FFD36A 0%, #FF9A2E 50%, #FF7A12 100%)",
+    boxShadow: "0 4px 0 #C85A10, 0 8px 14px rgba(10,40,90,0.25), inset 0 3px 0 rgba(255,255,255,0.55)",
   },
   blue: {
-    background: "linear-gradient(180deg, #5ED4FF 0%, #2EB8F0 45%, #1A8FD4 100%)",
-    boxShadow: "0 5px 0 #0E5A9A, 0 10px 18px rgba(0,20,60,0.35), inset 0 2px 0 rgba(255,255,255,0.4)",
+    background: "linear-gradient(180deg, #8CECFF 0%, #3EC6F5 50%, #1AA8E8 100%)",
+    boxShadow: "0 4px 0 #0D6BA8, 0 8px 14px rgba(10,40,90,0.25), inset 0 3px 0 rgba(255,255,255,0.6)",
   },
 };
 
@@ -82,9 +82,9 @@ export function BackBubble(props: BackProps & { to?: string }) {
 
 /** Shared glass header panel style (ocean select + in-level). */
 export const glassHeaderPanelStyle: CSSProperties = {
-  background: "linear-gradient(135deg, rgba(8,40,110,0.72) 0%, rgba(20,70,150,0.55) 100%)",
-  borderColor: "rgba(94,212,255,0.55)",
-  boxShadow: "0 10px 24px rgba(0,20,60,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+  background: "linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(170,226,255,0.55) 100%)",
+  borderColor: "rgba(255,255,255,0.9)",
+  boxShadow: "0 10px 22px rgba(0,30,70,0.18), inset 0 1px 0 rgba(255,255,255,0.85)",
   backdropFilter: "blur(10px)",
 };
 
@@ -106,8 +106,13 @@ export function PageTitleBar({ title, backTo, backLabel = "Back" }: TitleBarProp
     >
       <BackButton to={backTo} label={backLabel} className={BACK_LEFT_CLASS} />
       <h1
-        className="pointer-events-none font-display text-4xl font-bold uppercase tracking-wide text-white sm:text-5xl"
-        style={{ textShadow: "0 3px 0 rgba(0,40,90,0.35), 0 8px 20px rgba(0,20,60,0.4)" }}
+        className="pointer-events-none text-3xl uppercase tracking-wide text-white sm:text-5xl"
+        style={{
+          fontFamily: '"Luckiest Guy", sans-serif',
+          WebkitTextStroke: "5px #0B3D91",
+          paintOrder: "stroke fill",
+          textShadow: "0 4px 0 #fff, 0 8px 16px rgba(0,30,70,0.25)",
+        }}
       >
         {title}
       </h1>

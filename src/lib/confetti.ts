@@ -30,13 +30,14 @@ export function celebrate() {
 
 export function sparkleAt(x: number, y: number) {
   confetti({
-    particleCount: 30,
-    startVelocity: 20,
-    spread: 180,
-    ticks: 60,
+    particleCount: 28,
+    startVelocity: 24,
+    spread: 360,
+    ticks: 70,
     origin: { x, y },
-    colors: ["#FFD93D", "#FFFFFF", "#2EC4F1"],
-    scalar: 0.7,
+    colors: ["#FFD93D", "#FFFFFF", "#FF8C2A", "#5ED4FF", "#3DDC97"],
+    shapes: ["star", "circle"],
+    scalar: 0.82,
     zIndex: 9999,
     disableForReducedMotion: true,
   });
