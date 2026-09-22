@@ -38,7 +38,7 @@ const SLIDES: Slide[] = [
   },
   {
     heading: "Choose an Ocean!",
-    body: "Pick an ocean — from the sunny Pacific to the icy Arctic — and dive right in!",
+    body: "Start with the sunny Pacific Ocean, then unlock Atlantic, Indian, Southern, and Arctic as you go!",
     img: char1,
   },
   {

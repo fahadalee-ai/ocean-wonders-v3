@@ -179,7 +179,7 @@ function OceanSelectPage() {
             How to play
           </h2>
           <p className="mt-2 text-sm font-bold leading-relaxed text-[#0B3D91]/80">
-            Tap a glowing ocean badge to dive in. Drag each sea friend from the inventory onto its matching shadow.
+            Start with the glowing Pacific Ocean. Drag each sea friend from the inventory onto its matching shadow.
             Finish an ocean to unlock the next one. Stars and coins never punish — they just celebrate how you did!
           </p>
           <button

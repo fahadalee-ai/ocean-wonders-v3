@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import worldMap from "@/assets/maps/cartoon-world-oceans.png";
 import { getOcean } from "@/data/oceans";
@@ -48,112 +48,164 @@ type Props = {
 
 export function OceanWorldMap({ selectedId, oceanStats = {}, onPick }: Props) {
   const [shakeId, setShakeId] = useState<string | null>(null);
+  const [pickingId, setPickingId] = useState<string | null>(null);
+  const pickingOcean = pickingId ? getOcean(pickingId) : undefined;
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden" style={{ backgroundColor: "#3EB6F2" }}>
-      <img
+      <motion.img
         src={worldMap}
         alt="Cartoon world map of the five oceans"
         className="pointer-events-none absolute inset-0 h-full w-full select-none object-fill"
         draggable={false}
+        animate={pickingId ? { scale: 1.08 } : { scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 0.7, 0.2, 1] }}
       />
 
       {HOTSPOTS.map((slot, i) => {
-            const ocean = getOcean(slot.id);
-            if (!ocean) return null;
-            const stats = oceanStats[ocean.id];
-            const unlocked = stats?.unlocked ?? ocean.id === "arctic";
-            const selected = selectedId === ocean.id;
-            const shaking = shakeId === ocean.id;
+        const ocean = getOcean(slot.id);
+        if (!ocean) return null;
+        const stats = oceanStats[ocean.id];
+        const unlocked = stats?.unlocked ?? ocean.id === "pacific";
+        const selected = selectedId === ocean.id || pickingId === ocean.id;
+        const shaking = shakeId === ocean.id;
+        const picking = pickingId === ocean.id;
 
-            return (
-              <motion.button
-                key={ocean.id}
-                type="button"
-                aria-label={unlocked ? ocean.name : `${ocean.name} locked`}
-                onClick={() => {
-                  if (!unlocked) {
-                    playSfx("lock");
-                    setShakeId(ocean.id);
-                    window.setTimeout(() => setShakeId((id) => (id === ocean.id ? null : id)), 420);
-                    onPick?.(ocean.id, false);
-                    return;
-                  }
-                  playSfx("tap");
-                  onPick?.(ocean.id, true);
-                }}
-                className="absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        return (
+          <motion.button
+            key={ocean.id}
+            type="button"
+            aria-label={unlocked ? ocean.name : `${ocean.name} locked`}
+            onClick={() => {
+              if (pickingId) return;
+              if (!unlocked) {
+                playSfx("lock");
+                setShakeId(ocean.id);
+                window.setTimeout(() => setShakeId((id) => (id === ocean.id ? null : id)), 420);
+                onPick?.(ocean.id, false);
+                return;
+              }
+              playSfx("tap");
+              setPickingId(ocean.id);
+              window.setTimeout(() => onPick?.(ocean.id, true), 820);
+            }}
+            className="absolute z-10 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              left: `${slot.left}%`,
+              top: `${slot.top}%`,
+              width: slot.size,
+              zIndex: picking ? 30 : 10,
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: picking ? 1.28 : 1,
+              opacity: pickingId && !picking ? 0.35 : 1,
+              x: shaking ? [-5, 5, -4, 4, 0] : 0,
+            }}
+            transition={
+              shaking
+                ? { duration: 0.4 }
+                : picking
+                  ? { type: "spring", stiffness: 380, damping: 14 }
+                  : { type: "spring", stiffness: 420, damping: 16, delay: 0.12 + i * 0.05 }
+            }
+          >
+            <motion.span
+              className="relative block aspect-square w-full"
+              animate={unlocked && !pickingId ? { scale: selected ? 1.08 : [1, 1.06, 1] } : { scale: 1 }}
+              transition={
+                unlocked && !pickingId ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }
+              }
+            >
+              {unlocked &&
+                [0, 1, 2].map((ring) => (
+                  <motion.span
+                    key={`${ocean.id}-idle-${ring}`}
+                    className="pointer-events-none absolute inset-[-18%] rounded-full border-2 border-white/80"
+                    style={{ boxShadow: `0 0 12px ${slot.glow}` }}
+                    initial={false}
+                    animate={
+                      picking
+                        ? { scale: [1, 2.6], opacity: [0.85, 0] }
+                        : { scale: [0.85, 1.35], opacity: [0.45, 0] }
+                    }
+                    transition={
+                      picking
+                        ? { duration: 0.7, delay: ring * 0.12, ease: "easeOut" }
+                        : { duration: 2.4, delay: ring * 0.55 + i * 0.12, repeat: Infinity, ease: "easeOut" }
+                    }
+                  />
+                ))}
+              <span
+                className="pointer-events-none absolute inset-[-8%] rounded-full"
                 style={{
-                  left: `${slot.left}%`,
-                  top: `${slot.top}%`,
-                  width: slot.size,
+                  boxShadow: unlocked
+                    ? `0 0 0 3px #fff, 0 0 16px 4px ${slot.glow}`
+                    : "0 0 0 2px rgba(255,255,255,0.55)",
                 }}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{
-                  scale: 1,
-                  opacity: 1,
-                  x: shaking ? [-5, 5, -4, 4, 0] : 0,
+              />
+              <img
+                src={ocean.badge}
+                alt=""
+                className="relative z-[1] h-full w-full rounded-full object-contain"
+                style={{
+                  filter: unlocked ? "none" : "grayscale(0.8) brightness(0.7)",
                 }}
-                transition={
-                  shaking
-                    ? { duration: 0.4 }
-                    : { type: "spring", stiffness: 420, damping: 16, delay: 0.12 + i * 0.05 }
-                }
+                draggable={false}
+              />
+              <span
+                className="pointer-events-none absolute left-1/2 top-[108%] z-[2] w-max -translate-x-1/2 rounded-full border-2 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white sm:text-xs"
+                style={{
+                  fontFamily: '"Baloo 2", sans-serif',
+                  background: unlocked
+                    ? "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)"
+                    : "rgba(6,24,70,0.65)",
+                  borderColor: "#FFFFFF",
+                  boxShadow: "0 3px 0 #062A66",
+                }}
               >
-                <motion.span
-                  className="relative block aspect-square w-full"
-                  animate={unlocked ? { scale: selected ? 1.08 : [1, 1.04, 1] } : { scale: 1 }}
-                  transition={
-                    unlocked ? { duration: 2.6, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }
-                  }
-                >
+                {ocean.name.replace(" Ocean", "")}
+              </span>
+              {!unlocked && (
+                <span className="pointer-events-none absolute left-1/2 top-[46%] z-[2] -translate-x-1/2 -translate-y-1/2">
                   <span
-                    className="pointer-events-none absolute inset-[-8%] rounded-full"
+                    className="flex h-[1.25rem] w-[1.25rem] items-center justify-center rounded-full border-2 border-white"
                     style={{
-                      boxShadow: unlocked
-                        ? `0 0 0 3px #fff, 0 0 16px 4px ${slot.glow}`
-                        : "0 0 0 2px rgba(255,255,255,0.55)",
-                    }}
-                  />
-                  <img
-                    src={ocean.badge}
-                    alt=""
-                    className="relative z-[1] h-full w-full rounded-full object-contain"
-                    style={{
-                      filter: unlocked ? "none" : "grayscale(0.8) brightness(0.7)",
-                    }}
-                    draggable={false}
-                  />
-                  <span
-                    className="pointer-events-none absolute left-1/2 top-[108%] z-[2] w-max -translate-x-1/2 rounded-full border-2 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-white sm:text-xs"
-                    style={{
-                      fontFamily: '"Baloo 2", sans-serif',
-                      background: unlocked
-                        ? "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)"
-                        : "rgba(6,24,70,0.65)",
-                      borderColor: "#FFFFFF",
-                      boxShadow: "0 3px 0 #062A66",
+                      background: "linear-gradient(180deg, #FFD36A 0%, #FF7A12 100%)",
+                      boxShadow: "0 2px 0 #C85A10",
                     }}
                   >
-                    {ocean.name.replace(" Ocean", "")}
+                    <Lock className="h-3 w-3 text-white" strokeWidth={3} />
                   </span>
-                  {!unlocked && (
-                    <span className="pointer-events-none absolute left-1/2 top-[46%] z-[2] -translate-x-1/2 -translate-y-1/2">
-                      <span
-                        className="flex h-[1.25rem] w-[1.25rem] items-center justify-center rounded-full border-2 border-white"
-                        style={{
-                          background: "linear-gradient(180deg, #FFD36A 0%, #FF7A12 100%)",
-                          boxShadow: "0 2px 0 #C85A10",
-                        }}
-                      >
-                        <Lock className="h-3 w-3 text-white" strokeWidth={3} />
-                      </span>
-                    </span>
-                  )}
-                </motion.span>
-              </motion.button>
-            );
+                </span>
+              )}
+            </motion.span>
+          </motion.button>
+        );
       })}
+
+      <AnimatePresence>
+        {pickingOcean && (
+          <motion.div
+            className="pointer-events-none absolute inset-x-0 top-[18%] z-40 flex justify-center"
+            initial={{ opacity: 0, y: 16, scale: 0.7 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 420, damping: 16 }}
+          >
+            <span
+              className="rounded-full border-[3px] border-white px-5 py-1.5 text-lg font-extrabold uppercase tracking-wide text-white sm:text-2xl"
+              style={{
+                fontFamily: '"Luckiest Guy", "Baloo 2", sans-serif',
+                background: "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)",
+                boxShadow: "0 6px 0 #062A66, 0 12px 22px rgba(0,20,60,0.35)",
+              }}
+            >
+              {pickingOcean.name}!
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
