@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { GlossyButton } from "@/components/GlossyButton";
 import { markOnboarded } from "@/lib/progress";
-import bgSplash from "@/assets/bg.png";
+import bgSplash from "@/assets/new-bg.jpg";
 import char1 from "@/assets/Characters_1.png";
 import char2 from "@/assets/Characters_2.png";
 import char4 from "@/assets/Characters_4.png";

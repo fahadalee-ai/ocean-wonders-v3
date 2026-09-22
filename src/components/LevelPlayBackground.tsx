@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import sceneReef from "@/assets/new-bg.jpg";
 
 type SoftBubble = {
   id: number;
@@ -33,10 +34,16 @@ export function LevelPlayBackground() {
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <img
+        src={sceneReef}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(180deg, #1A2B6D 0%, #1E4A9E 42%, #0B7BC8 78%, #0EA5E9 100%)",
+          background: "linear-gradient(180deg, rgba(6,24,70,0.18) 0%, rgba(10,47,122,0.08) 45%, rgba(6,24,70,0.22) 100%)",
         }}
       />
 

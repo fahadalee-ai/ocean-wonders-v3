@@ -18,8 +18,8 @@ import {
 import { playSfx } from "@/lib/sfx";
 import char3 from "@/assets/Characters_3.png";
 import mascot from "@/assets/mascot-turtle.png";
-import bgPacific from "@/assets/bg-pacific.jpg";
-import bgArctic from "@/assets/bg-arctic.jpg";
+import bgPacific from "@/assets/new-bg.jpg";
+import bgArctic from "@/assets/new-bg_01.jpg";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({

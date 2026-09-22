@@ -13,34 +13,45 @@ import outline7 from "@/assets/Characters_7_outline.png";
 import outline8 from "@/assets/Characters_8_outline.png";
 import outline9 from "@/assets/Characters_9_outline.png";
 
-import imgPuffer from "@/assets/pufferfish-cut.png";
 import imgDugong from "@/assets/dugong-cut.png";
-import imgAngel from "@/assets/c-angelfish.png";
 import imgBeluga from "@/assets/c-beluga.png";
 import imgNarwhal from "@/assets/c-narwhal.png";
-import imgParrot from "@/assets/c-parrotfish.png";
 import imgManta from "@/assets/c-mantaray.png";
 import imgTuna from "@/assets/c-tuna.png";
 import imgKrill from "@/assets/c-krill.png";
 import imgJelly from "@/assets/c-jellyfish.png";
 import imgCod from "@/assets/c-cod.png";
-import imgLion from "@/assets/c-lionfish.png";
 import imgSting from "@/assets/c-stingray.png";
 import imgWhaleShark from "@/assets/c-whaleshark.png";
-import imgClown from "@/assets/c-clownfish.png";
 import imgSeaHorse from "@/assets/c-seahorse.png";
 
-import bgPacific from "@/assets/bg-pacific.jpg";
-import bgAtlantic from "@/assets/bg-atlantic.jpg";
-import bgIndian from "@/assets/bg-indian.jpg";
-import bgArctic from "@/assets/bg-arctic.jpg";
-import bgSouthern from "@/assets/bg-southern.jpg";
+import imgClown from "@/assets/new/Clownfish.png";
+import imgBlueTang from "@/assets/new/Blue-tang.png";
+import imgYellowTang from "@/assets/new/Yellow Tang.png";
+import imgButterfly from "@/assets/new/Butterflyfish.png";
+import imgAngel from "@/assets/new/Angelfish.png";
+import imgParrot from "@/assets/new/Parrotfish.png";
+import imgTrigger from "@/assets/new/Triggerfish.png";
+import imgPuffer from "@/assets/new/Pufferfish.png";
+import imgMoorish from "@/assets/new/Moorish-Idol.png";
+import imgLion from "@/assets/new/Lionfish.png";
+import imgGoby from "@/assets/new/Goby.png";
+import imgReefShark from "@/assets/new/Reef sharks.png";
+
+import bgReefA from "@/assets/new-bg.jpg";
+import bgReefB from "@/assets/new-bg_01.jpg";
 
 import badgeArctic from "@/assets/arctic-ocean.png";
 import badgeAtlantic from "@/assets/atlantic-ocean.png";
 import badgePacific from "@/assets/pacific-ocean.png";
 import badgeIndian from "@/assets/indian-ocean.png";
 import badgeSouthern from "@/assets/southern-ocean.png";
+
+import mapArctic from "@/assets/maps/map-arctic.png";
+import mapAtlantic from "@/assets/maps/map-atlantic.png";
+import mapPacific from "@/assets/maps/map-pacific.png";
+import mapIndian from "@/assets/maps/map-indian.png";
+import mapSouthern from "@/assets/maps/map-southern.png";
 
 export type LevelMode = "match" | "challenge" | "friends";
 
@@ -99,6 +110,7 @@ export type Ocean = {
   gradient: string;
   bg: string;
   badge: string;
+  map: string;
   difficultyLabel: OceanDifficulty;
   character: Character;
   rosterIds: string[];
@@ -336,17 +348,94 @@ const CHARACTERS: Character[] = [
     img: imgWhaleShark,
     outline: imgWhaleShark,
   },
+  {
+    id: "bluetang",
+    name: "Blue Tang",
+    pronunciation: "BLOO TANG",
+    habitat: "Pacific coral reefs",
+    diet: "Algae",
+    funFact: "Blue tangs can turn purple or white when they get excited or sleepy!",
+    img: imgBlueTang,
+    outline: imgBlueTang,
+  },
+  {
+    id: "yellowtang",
+    name: "Yellow Tang",
+    pronunciation: "YEL-oh TANG",
+    habitat: "Pacific coral reefs",
+    diet: "Algae",
+    funFact: "Yellow tangs are bright as sunshine and nibble algae to keep reefs clean!",
+    img: imgYellowTang,
+    outline: imgYellowTang,
+  },
+  {
+    id: "butterflyfish",
+    name: "Butterflyfish",
+    pronunciation: "BUT-er-fly-fish",
+    habitat: "Pacific coral reefs",
+    diet: "Coral bits and tiny animals",
+    funFact: "Butterflyfish swim in pairs and stay with their best friend for life!",
+    img: imgButterfly,
+    outline: imgButterfly,
+  },
+  {
+    id: "triggerfish",
+    name: "Triggerfish",
+    pronunciation: "TRIG-er-fish",
+    habitat: "Pacific reefs",
+    diet: "Crabs, snails, and sea urchins",
+    funFact: "Triggerfish can lock a spine on their back like a door latch to hide in rocks!",
+    img: imgTrigger,
+    outline: imgTrigger,
+  },
+  {
+    id: "moorishidol",
+    name: "Moorish Idol",
+    pronunciation: "MOR-ish EYE-dul",
+    habitat: "Pacific coral reefs",
+    diet: "Sponges and algae",
+    funFact: "Moorish idols have a long streaming fin that looks like a fancy ribbon!",
+    img: imgMoorish,
+    outline: imgMoorish,
+  },
+  {
+    id: "goby",
+    name: "Goby",
+    pronunciation: "GOH-bee",
+    habitat: "Sandy Pacific reefs",
+    diet: "Tiny leftover bits",
+    funFact: "Gobies are tiny housekeepers — they share a burrow with a shrimp roommate!",
+    img: imgGoby,
+    outline: imgGoby,
+  },
+  {
+    id: "reefshark",
+    name: "Reef Shark",
+    pronunciation: "REEF SHARK",
+    habitat: "Pacific coral reefs",
+    diet: "Fish",
+    funFact: "Reef sharks are shy neighbors that help keep the coral reef healthy!",
+    img: imgReefShark,
+    outline: imgReefShark,
+  },
 ];
 
 /** Real fish only — matching uses these, never whales, turtles, or ice animals. */
 const FISH_IDS = [
   "clownfish",
-  "pufferfish",
+  "bluetang",
+  "yellowtang",
+  "butterflyfish",
   "angelfish",
   "parrotfish",
+  "triggerfish",
+  "pufferfish",
+  "moorishidol",
+  "lionfish",
+  "goby",
+  "reefshark",
   "tuna",
   "shark",
-  "lionfish",
   "cod",
   "seahorse",
   "stingray",
@@ -363,6 +452,7 @@ type OceanDef = {
   gradient: string;
   bg: string;
   badge: string;
+  map: string;
   difficultyLabel: OceanDifficulty;
   heroId: string;
   rosterIds: string[];
@@ -377,11 +467,12 @@ const OCEAN_DEFS: OceanDef[] = [
     tagline: "Sea Ice & Cold-Water Reefs",
     accent: "#A8D8EA",
     gradient: "linear-gradient(180deg, #E8F7FF 0%, #7FD8FF 35%, #061F52 100%)",
-    bg: bgArctic,
+    bg: bgReefA,
     badge: badgeArctic,
+    map: mapArctic,
     difficultyLabel: "Beginner",
     heroId: "cod",
-    rosterIds: ["cod", "clownfish", "angelfish", "tuna", "parrotfish", "lionfish", "seahorse", "stingray"],
+    rosterIds: ["cod", "shark", "tuna"],
   },
   {
     id: "atlantic",
@@ -390,11 +481,23 @@ const OCEAN_DEFS: OceanDef[] = [
     tagline: "Tropical Reefs & Open Sea",
     accent: "#3DDC97",
     gradient: "linear-gradient(180deg, #7FD8FF 0%, #2EC4F1 45%, #0B3D91 100%)",
-    bg: bgAtlantic,
+    bg: bgReefB,
     badge: badgeAtlantic,
+    map: mapAtlantic,
     difficultyLabel: "Easy",
-    heroId: "clownfish",
-    rosterIds: ["clownfish", "angelfish", "tuna", "parrotfish", "lionfish", "pufferfish"],
+    heroId: "tuna",
+    rosterIds: [
+      "tuna",
+      "angelfish",
+      "parrotfish",
+      "pufferfish",
+      "lionfish",
+      "stingray",
+      "seahorse",
+      "shark",
+      "butterflyfish",
+      "triggerfish",
+    ],
   },
   {
     id: "pacific",
@@ -403,11 +506,25 @@ const OCEAN_DEFS: OceanDef[] = [
     tagline: "Coral Reefs & Open Sea",
     accent: "#2EC4F1",
     gradient: "linear-gradient(180deg, #5EE7C4 0%, #2EC4F1 40%, #0B3D91 100%)",
-    bg: bgPacific,
+    bg: bgReefA,
     badge: badgePacific,
+    map: mapPacific,
     difficultyLabel: "Medium",
-    heroId: "shark",
-    rosterIds: ["shark", "clownfish", "seahorse", "lionfish", "whaleshark", "pufferfish"],
+    heroId: "clownfish",
+    rosterIds: [
+      "clownfish",
+      "bluetang",
+      "yellowtang",
+      "butterflyfish",
+      "angelfish",
+      "parrotfish",
+      "triggerfish",
+      "pufferfish",
+      "moorishidol",
+      "lionfish",
+      "goby",
+      "reefshark",
+    ],
   },
   {
     id: "indian",
@@ -416,11 +533,25 @@ const OCEAN_DEFS: OceanDef[] = [
     tagline: "Tropical Reefs & Seagrass",
     accent: "#FFD93D",
     gradient: "linear-gradient(180deg, #FFE08A 0%, #2EC4F1 50%, #0B3D91 100%)",
-    bg: bgIndian,
+    bg: bgReefB,
     badge: badgeIndian,
+    map: mapIndian,
     difficultyLabel: "Hard",
     heroId: "lionfish",
-    rosterIds: ["parrotfish", "angelfish", "clownfish", "lionfish", "mantaray", "seahorse"],
+    rosterIds: [
+      "clownfish",
+      "bluetang",
+      "butterflyfish",
+      "angelfish",
+      "parrotfish",
+      "triggerfish",
+      "pufferfish",
+      "moorishidol",
+      "lionfish",
+      "mantaray",
+      "seahorse",
+      "reefshark",
+    ],
   },
   {
     id: "southern",
@@ -429,11 +560,12 @@ const OCEAN_DEFS: OceanDef[] = [
     tagline: "Ice Shelves & Deep Sea",
     accent: "#7FD8FF",
     gradient: "linear-gradient(180deg, #D4F1F9 0%, #7FD8FF 40%, #0B3D91 100%)",
-    bg: bgSouthern,
+    bg: bgReefA,
     badge: badgeSouthern,
+    map: mapSouthern,
     difficultyLabel: "Expert",
     heroId: "tuna",
-    rosterIds: ["tuna", "shark", "stingray", "pufferfish", "clownfish", "angelfish"],
+    rosterIds: ["tuna", "shark", "stingray"],
   },
 ];
 
@@ -450,21 +582,17 @@ function isMatchFish(id: string) {
   return (FISH_IDS as readonly string[]).includes(id);
 }
 
-function pickLevelFish(def: OceanDef, _oceanIndex: number, _localNumber: number, count: number): string[] {
-  const result: string[] = [];
+function pickLevelFish(def: OceanDef, count: number): string[] {
+  const pool: string[] = [];
   for (const id of def.rosterIds) {
-    if (isMatchFish(id)) uniquePush(result, id);
+    if (isMatchFish(id)) uniquePush(pool, id);
   }
-  for (const id of FISH_IDS) {
-    if (result.length >= count) break;
-    uniquePush(result, id);
-  }
-  return result.filter(isMatchFish).slice(0, count);
+  return pool.slice(0, Math.min(count, pool.length));
 }
 
-function pickDistractors(used: string[], count: number): string[] {
+function pickDistractors(rosterIds: string[], used: string[], count: number): string[] {
   if (count <= 0) return [];
-  return FISH_IDS.filter((id) => !used.includes(id)).slice(0, count);
+  return rosterIds.filter((id) => isMatchFish(id) && !used.includes(id)).slice(0, count);
 }
 
 function matchDifficulty(localNumber: number, oceanIndex: number, fishCount: number, distractorCount: number): Difficulty {
@@ -485,8 +613,8 @@ function buildLevels(def: OceanDef, oceanIndex: number, startLevel: number): Lev
   const levels: Level[] = [];
   for (let local = 1; local <= LEVELS_PER_OCEAN; local++) {
     const baseCount = MATCH_FISH_COUNTS[local - 1] ?? 4;
-    const fishIds = pickLevelFish(def, oceanIndex, local, baseCount);
-    const distractorIds = pickDistractors(fishIds, DISTRACTORS[local - 1] ?? 0);
+    const fishIds = pickLevelFish(def, baseCount);
+    const distractorIds = pickDistractors(def.rosterIds, fishIds, DISTRACTORS[local - 1] ?? 0);
     const difficulty = matchDifficulty(local, oceanIndex, fishIds.length, distractorIds.length);
     levels.push({
       id: `level-${startLevel + local - 1}`,
@@ -517,6 +645,7 @@ export const OCEANS: Ocean[] = OCEAN_DEFS.map((def, i) => {
     gradient: def.gradient,
     bg: def.bg,
     badge: def.badge,
+    map: def.map,
     difficultyLabel: def.difficultyLabel,
     character: hero,
     rosterIds: def.rosterIds,

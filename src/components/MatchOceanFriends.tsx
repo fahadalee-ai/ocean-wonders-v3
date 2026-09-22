@@ -22,9 +22,11 @@ import {
 } from "@/lib/creatureMotion";
 import { sparkleAt } from "@/lib/confetti";
 import { saveLevelProgress } from "@/lib/progress";
+import { speakFishName, warmVoices } from "@/lib/sfx";
 import char2 from "@/assets/Characters_2.png";
 import char4 from "@/assets/Characters_4.png";
 import char6 from "@/assets/Characters_6.png";
+import sceneReef from "@/assets/new-bg_01.jpg";
 
 /** Natural scatter slots — larger center creature, smaller around (reference-style). */
 const SLOT_LAYOUTS: Record<number, { left: number; top: number; size: number }[]> = {
@@ -165,6 +167,7 @@ export function MatchOceanFriendsLevel({
   useEffect(() => {
     startRef.current = Date.now();
     completingRef.current = false;
+    warmVoices();
   }, [level.number]);
 
   function finishLevel() {
@@ -201,6 +204,8 @@ export function MatchOceanFriendsLevel({
     attemptsRef.current += 1;
 
     if (overId && overId === dragId) {
+      const character = uniqueFish.find((c) => c.id === dragId);
+      if (character) speakFishName(character.name);
       setGlidingId(dragId);
       const overRect = e.over?.rect;
       if (overRect) {
@@ -236,9 +241,10 @@ export function MatchOceanFriendsLevel({
 
       {/* Minimal chrome — reference-style */}
       <header
-        className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(0.5rem,env(safe-area-inset-top))] ${PAGE_HEADER_PAD}`}
+        className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(1.35rem,calc(env(safe-area-inset-top)+0.35rem))] ${PAGE_HEADER_PAD}`}
       >
         <BackButton
+          size="sm"
           onClick={() => {
             completingRef.current = true;
             onDone();
@@ -260,6 +266,7 @@ export function MatchOceanFriendsLevel({
         </div>
         <div className="flex-1" />
         <RoundIconButton
+          size="sm"
           variant="blue"
           label={paused ? "Resume" : "Pause"}
           onClick={() => {
@@ -269,9 +276,9 @@ export function MatchOceanFriendsLevel({
           }}
         >
           {paused ? (
-            <Play className="h-6 w-6 text-white sm:h-7 sm:w-7" fill="currentColor" strokeWidth={2.5} />
+            <Play className="h-4 w-4 text-white" fill="currentColor" strokeWidth={2.5} />
           ) : (
-            <Pause className="h-6 w-6 text-white sm:h-7 sm:w-7" strokeWidth={2.5} />
+            <Pause className="h-4 w-4 text-white" strokeWidth={2.5} />
           )}
         </RoundIconButton>
       </header>
@@ -385,11 +392,17 @@ export function MatchOceanFriendsLevel({
 function FriendsSceneBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" style={{ contain: "paint" }} aria-hidden>
+      <img
+        src={sceneReef}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        draggable={false}
+      />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, #3BA4D8 0%, #1E7BB8 32%, #1568A0 58%, #0E4F82 82%, #0A3A66 100%)",
+            "linear-gradient(180deg, rgba(6,24,70,0.12) 0%, transparent 40%, rgba(6,24,70,0.2) 100%)",
         }}
       />
       {[10, 22, 36, 50, 64, 78, 90].map((left, i) => (
@@ -412,7 +425,7 @@ function FriendsSceneBackground() {
         className="absolute inset-x-0 bottom-0 h-[32%]"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, rgba(8,40,70,0.4) 45%, rgba(4,28,50,0.7) 100%)",
+            "linear-gradient(180deg, transparent 0%, rgba(8,40,70,0.12) 55%, rgba(4,28,50,0.28) 100%)",
         }}
       />
     </div>

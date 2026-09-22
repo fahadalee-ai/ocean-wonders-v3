@@ -21,9 +21,7 @@ import { FrostedPill } from "@/components/ChunkyTitle";
 import { BackButton, RoundIconButton, PAGE_HEADER_PAD } from "@/components/BackBubble";
 import { GlossyButton } from "@/components/GlossyButton";
 import { COPY } from "@/data/content";
-import logoSeaFriends from "@/assets/logo-sea-friends.png";
-import logoMatching from "@/assets/logo-fish-matching.png";
-import sceneReef from "@/assets/scene-reef.jpg";
+import sceneReef from "@/assets/new-bg_01.jpg";
 import {
   getLevelDistractors,
   type Character,
@@ -33,7 +31,7 @@ import {
 import { KnockoutImg, useKnockoutSrc } from "@/components/KnockoutImg";
 import { sparkleAt } from "@/lib/confetti";
 import { awardLevelRewards, saveLevelProgress } from "@/lib/progress";
-import { playSfx } from "@/lib/sfx";
+import { playSfx, speakFishName, warmVoices } from "@/lib/sfx";
 
 type SwimJob = {
   id: string;
@@ -46,28 +44,28 @@ type ShadowSlot = { left: number; top: number; size: number };
 
 const SHADOW_SLOTS: Record<number, ShadowSlot[]> = {
   4: [
-    { left: 26, top: 38, size: 20 },
-    { left: 64, top: 30, size: 24 },
-    { left: 36, top: 72, size: 21 },
-    { left: 80, top: 64, size: 26 },
+    { left: 26, top: 32, size: 16 },
+    { left: 74, top: 32, size: 16 },
+    { left: 26, top: 70, size: 16 },
+    { left: 74, top: 70, size: 16 },
   ],
   6: [
-    { left: 22, top: 34, size: 17 },
-    { left: 50, top: 26, size: 19 },
-    { left: 78, top: 32, size: 22 },
-    { left: 30, top: 66, size: 18 },
-    { left: 58, top: 72, size: 20 },
-    { left: 84, top: 58, size: 23 },
+    { left: 18, top: 30, size: 14 },
+    { left: 50, top: 28, size: 14 },
+    { left: 82, top: 30, size: 14 },
+    { left: 18, top: 70, size: 14 },
+    { left: 50, top: 72, size: 14 },
+    { left: 82, top: 70, size: 14 },
   ],
   8: [
-    { left: 18, top: 30, size: 15 },
-    { left: 42, top: 24, size: 16 },
-    { left: 66, top: 28, size: 18 },
-    { left: 88, top: 38, size: 17 },
-    { left: 24, top: 56, size: 16 },
-    { left: 50, top: 52, size: 17 },
-    { left: 74, top: 62, size: 19 },
-    { left: 40, top: 78, size: 16 },
+    { left: 14, top: 28, size: 12 },
+    { left: 38, top: 28, size: 12 },
+    { left: 62, top: 28, size: 12 },
+    { left: 86, top: 28, size: 12 },
+    { left: 14, top: 70, size: 12 },
+    { left: 38, top: 70, size: 12 },
+    { left: 62, top: 70, size: 12 },
+    { left: 86, top: 70, size: 12 },
   ],
 };
 
@@ -172,6 +170,7 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
   useEffect(() => {
     startRef.current = Date.now();
     completingRef.current = false;
+    warmVoices();
   }, [level.number]);
 
   function finishLevel() {
@@ -223,6 +222,7 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
       const overRect = e.over?.rect;
       setClaimedIds((prev) => (prev.includes(dragId) ? prev : [...prev, dragId]));
       setGlowIds((prev) => (prev.includes(dragId) ? prev : [...prev, dragId]));
+      if (character) speakFishName(character.name);
 
       window.setTimeout(() => {
         setGlowIds((prev) => prev.filter((id) => id !== dragId));
@@ -274,9 +274,10 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
       <PlaySceneBackground ocean={ocean} />
 
       <header
-        className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(0.4rem,env(safe-area-inset-top))] ${PAGE_HEADER_PAD}`}
+        className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(1.35rem,calc(env(safe-area-inset-top)+0.35rem))] ${PAGE_HEADER_PAD}`}
       >
         <BackButton
+          size="sm"
           onClick={() => {
             completingRef.current = true;
             onDone();
@@ -284,17 +285,21 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
           label="Back"
         />
         <div className="min-w-0 flex-1 text-center">
-          <img
-            src={logoMatching}
-            alt={COPY.fishMatching}
-            className="mx-auto h-10 w-auto max-w-[min(52vw,420px)] object-contain sm:h-12"
-            draggable={false}
-          />
+          <span
+            className="text-[11px] font-extrabold uppercase tracking-wide text-white sm:text-sm"
+            style={{
+              fontFamily: '"Baloo 2", sans-serif',
+              textShadow: "0 1px 0 #0B3D91, 0 2px 8px rgba(0,20,60,0.45)",
+            }}
+          >
+            {COPY.playArea}
+          </span>
         </div>
-        <FrostedPill>
+        <FrostedPill className="px-2.5 py-0 text-[10px] sm:text-xs">
           {ocean.name.replace(" Ocean", "")} · {level.title}
         </FrostedPill>
         <RoundIconButton
+          size="sm"
           variant="blue"
           label={paused ? "Resume" : "Pause"}
           onClick={() => {
@@ -305,9 +310,9 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
           }}
         >
           {paused ? (
-            <Play className="h-6 w-6 text-white sm:h-7 sm:w-7" fill="currentColor" strokeWidth={2.5} />
+            <Play className="h-4 w-4 text-white" fill="currentColor" strokeWidth={2.5} />
           ) : (
-            <Pause className="h-6 w-6 text-white sm:h-7 sm:w-7" strokeWidth={2.5} />
+            <Pause className="h-4 w-4 text-white" strokeWidth={2.5} />
           )}
         </RoundIconButton>
       </header>
@@ -365,11 +370,7 @@ export function FishMatchingGame({ ocean, level, fish, onDone, onReplay: _onRepl
           />
 
           <section ref={playRef} className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-            <div className="pointer-events-none absolute inset-x-0 top-2 z-20 flex justify-center">
-              <FrostedPill>{COPY.playArea}</FrostedPill>
-            </div>
-
-            <div className="absolute inset-0 h-full w-full">
+            <div className="absolute inset-[6%] h-auto w-auto">
               {dropTargets.map((character, i) => {
                 const slot = slotsForCount(dropTargets.length)[i] ?? { left: 50, top: 50, size: 20 };
                 return (
@@ -450,32 +451,32 @@ function InventoryPanel({
   const rows = Math.max(2, Math.ceil(fish.length / 2));
 
   return (
-    <aside
-      className="flex w-[min(26vw,220px)] min-w-[168px] max-w-[232px] shrink-0 flex-col overflow-hidden rounded-[1.75rem] border-[3px] px-2.5 py-2.5 sm:px-3 sm:py-3"
-      style={{
-        background:
-          "linear-gradient(180deg, rgba(232,248,255,0.92) 0%, rgba(176,226,255,0.78) 55%, rgba(148,214,250,0.7) 100%)",
-        borderColor: "rgba(255,255,255,0.95)",
-        boxShadow:
-          "0 14px 28px rgba(0,40,90,0.18), inset 0 2px 0 rgba(255,255,255,0.9), 0 0 0 2px rgba(80,180,230,0.25)",
-      }}
-    >
-      <div className="mb-2 shrink-0 text-center">
-        <img
-          src={logoSeaFriends}
-          alt={COPY.seaFriends}
-          className="mx-auto h-7 w-auto max-w-[90%] object-contain sm:h-9"
-          draggable={false}
-        />
+    <aside className="flex w-[min(26vw,220px)] min-w-[168px] max-w-[232px] shrink-0 flex-col overflow-visible px-1 py-1 sm:px-1.5">
+      <div className="mb-1.5 shrink-0 text-center">
         <div
-          className="mt-0.5 text-sm font-extrabold leading-tight text-[#0A3A7A] sm:text-base"
-          style={{ fontFamily: '"Baloo 2", sans-serif' }}
+          className="text-sm font-extrabold uppercase leading-tight text-white sm:text-base"
+          style={{
+            fontFamily: '"Luckiest Guy", "Baloo 2", sans-serif',
+            color: "#FFD24A",
+            WebkitTextStroke: "2px #0B3D91",
+            paintOrder: "stroke fill",
+            textShadow: "0 3px 8px rgba(0,20,60,0.4)",
+          }}
+        >
+          {COPY.seaFriends}
+        </div>
+        <div
+          className="mt-0.5 text-[11px] font-extrabold leading-tight text-white sm:text-sm"
+          style={{
+            fontFamily: '"Baloo 2", sans-serif',
+            textShadow: "0 1px 0 #0B3D91, 0 2px 8px rgba(0,20,60,0.45)",
+          }}
         >
           Fish Inventory
         </div>
       </div>
       <div
-        className="grid min-h-0 w-full flex-1 grid-cols-2 gap-2 overflow-hidden"
+        className="grid min-h-0 w-full flex-1 grid-cols-2 gap-2 overflow-visible"
         style={{ gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}
       >
         {fish.map((c) => (
@@ -518,13 +519,11 @@ function InventoryTile({
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className="relative flex aspect-square h-[min(100%,5.85rem)] w-auto max-w-full touch-none cursor-grab items-center justify-center overflow-hidden rounded-2xl border-2 p-1.5 active:cursor-grabbing"
+      className="relative flex aspect-square h-[min(100%,5.85rem)] w-auto max-w-full touch-none cursor-grab items-center justify-center overflow-visible rounded-2xl border-2 p-1.5 active:cursor-grabbing"
       style={{
-        borderColor: settled ? "rgba(80,210,120,0.9)" : "rgba(255,255,255,0.85)",
-        background: settled
-          ? "linear-gradient(160deg, rgba(200,255,220,0.7), rgba(140,230,180,0.45))"
-          : "linear-gradient(160deg, rgba(255,255,255,0.65), rgba(180,230,255,0.4))",
-        boxShadow: "0 6px 12px rgba(0,30,70,0.16), inset 0 1px 0 rgba(255,255,255,0.7)",
+        borderColor: settled ? "rgba(80,210,120,0.95)" : "rgba(255,255,255,1)",
+        background: settled ? "rgba(220,255,230,0.96)" : "rgba(255,255,255,0.94)",
+        boxShadow: "0 8px 16px rgba(0,20,50,0.22), inset 0 1px 0 rgba(255,255,255,1)",
         opacity: hidden || isDragging ? 0.25 : 1,
       }}
       aria-label={`Drag ${character.name}`}
@@ -544,10 +543,10 @@ function InventoryTile({
             initial={{ scale: 0, rotate: -40, opacity: 0 }}
             animate={{ scale: 1, rotate: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 560, damping: 14 }}
-            className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white"
+            className="pointer-events-none absolute bottom-1 right-1 z-20 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white"
             style={{ background: "linear-gradient(180deg, #7CFF9A, #22C55E)", boxShadow: "0 2px 0 #15803D" }}
           >
-            <Check className="h-3 w-3 text-white" strokeWidth={4} />
+            <Check className="h-3.5 w-3.5 text-white" strokeWidth={4} />
           </motion.span>
         )}
       </AnimatePresence>
@@ -668,8 +667,7 @@ function ShadowTarget({
         left: `${left}%`,
         top: `${top}%`,
         width: `${size}%`,
-        maxWidth: 168,
-        minWidth: 88,
+        maxWidth: 112,
       }}
     >
       <div className="relative aspect-square w-full">
@@ -712,16 +710,16 @@ function ShadowTarget({
   );
 }
 
-function PlaySceneBackground({ ocean: _ocean }: { ocean: Ocean }) {
+function PlaySceneBackground({ ocean }: { ocean: Ocean }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       <div className="absolute inset-0" style={{ backgroundColor: "#1E8BC8" }} />
-      <img src={sceneReef} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
+      <img src={ocean.bg || sceneReef} alt="" className="absolute inset-0 h-full w-full object-cover" draggable={false} />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(28,148,210,0.42) 0%, rgba(32,158,216,0.22) 40%, rgba(20,130,190,0.06) 62%, transparent 74%)",
+            "linear-gradient(180deg, rgba(6,24,70,0.12) 0%, transparent 38%, rgba(6,24,70,0.18) 100%)",
         }}
       />
       {[16, 38, 58, 78].map((left, i) => (

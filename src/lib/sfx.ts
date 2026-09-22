@@ -31,23 +31,47 @@ function tone(freq: number, duration: number, type: OscillatorType, gain = 0.08,
   osc.stop(start + duration + 0.02);
 }
 
-function speakGoodJob() {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+function pickVoice() {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return undefined;
+  const voices = window.speechSynthesis.getVoices();
+  return (
+    voices.find((v) => /en/i.test(v.lang) && /female|girl|child|samantha|victoria|zira|siri/i.test(v.name)) ??
+    voices.find((v) => v.lang.startsWith("en")) ??
+    voices[0]
+  );
+}
+
+function speakLine(text: string, rate = 1.08, pitch = 1.28) {
+  if (typeof window === "undefined" || isMuted() || !("speechSynthesis" in window)) return;
   try {
     window.speechSynthesis.cancel();
-    const line = new SpeechSynthesisUtterance("Good job!");
-    line.rate = 1.18;
-    line.pitch = 1.38;
-    line.volume = 0.9;
-    const voices = window.speechSynthesis.getVoices();
-    const kid =
-      voices.find((v) => /child|kid|girl|female/i.test(`${v.name} ${v.lang}`)) ??
-      voices.find((v) => v.lang.startsWith("en"));
-    if (kid) line.voice = kid;
+    const line = new SpeechSynthesisUtterance(text);
+    line.rate = rate;
+    line.pitch = pitch;
+    line.volume = 1;
+    const voice = pickVoice();
+    if (voice) line.voice = voice;
     window.speechSynthesis.speak(line);
   } catch {
     /* ignore */
   }
+}
+
+/** Warm the browser voice list so the first match can speak immediately. */
+export function warmVoices() {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  window.speechSynthesis.getVoices();
+  if (typeof window.speechSynthesis.addEventListener === "function") {
+    window.speechSynthesis.addEventListener("voiceschanged", () => {
+      window.speechSynthesis.getVoices();
+    }, { once: true });
+  }
+}
+
+/** Speak the matched fish name with a kid-friendly voice. */
+export function speakFishName(name: string) {
+  if (!name.trim()) return;
+  speakLine(name, 0.98, 1.22);
 }
 
 /** Optional SFX hooks — soft synthesized cues until real audio files are added. */
@@ -63,7 +87,6 @@ export function playSfx(kind: SfxKind) {
       tone(988, 0.13, "sine", 0.07, 0.05);
       tone(1175, 0.16, "triangle", 0.06, 0.1);
       tone(1568, 0.22, "sine", 0.05, 0.14);
-      speakGoodJob();
       break;
     case "complete":
       tone(523, 0.12, "triangle", 0.07);

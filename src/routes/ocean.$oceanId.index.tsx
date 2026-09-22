@@ -5,6 +5,7 @@ import { getOcean, getLevelFish } from "@/data/oceans";
 import { AuthOceanBackground } from "@/components/AuthOceanBackground";
 import { BackButton, glassHeaderPanelStyle, PAGE_HEADER_PAD } from "@/components/BackBubble";
 import { GlossyButton } from "@/components/GlossyButton";
+import { KnockoutImg } from "@/components/KnockoutImg";
 import {
   getLevelProgress,
   getOceanStats,
@@ -100,8 +101,8 @@ function LevelSelectPage() {
     <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#1E8BC8" }}>
       <AuthOceanBackground fishCount={6} />
 
-      <header className={`relative z-10 mx-auto flex w-full max-w-5xl shrink-0 items-center gap-3 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:gap-4 sm:pb-2 sm:pt-3 ${PAGE_HEADER_PAD}`}>
-        <BackButton to="/globe" label="Back to oceans" />
+      <header className={`relative z-10 mx-auto flex w-full max-w-5xl shrink-0 items-center gap-3 pb-2 pt-[max(1.25rem,calc(env(safe-area-inset-top)+0.3rem))] sm:gap-4 sm:pb-2 ${PAGE_HEADER_PAD}`}>
+        <BackButton size="sm" to="/globe" label="Back to oceans" />
 
         <div
           className="min-w-0 flex-1 rounded-2xl border-2 px-3.5 py-2.5 sm:rounded-3xl sm:px-4 sm:py-3"
@@ -132,16 +133,16 @@ function LevelSelectPage() {
                   {ocean.difficultyLabel}
                 </span>
               </div>
-              <p className="mt-1 truncate text-xs font-extrabold text-[#0B3D91]/80 sm:text-sm">
-                <span style={{ color: "#E67A00" }}>{stats.stars} stars</span>
-                <span className="mx-1.5 text-[#0B3D91]/30">·</span>
+              <p className="mt-1 truncate text-xs font-extrabold text-[#0B3D91] sm:text-sm">
+                <span style={{ color: "#C44A10" }}>{stats.stars} stars</span>
+                <span className="mx-1.5 text-[#0B3D91]/40">·</span>
                 <span>
                   {stats.completed}/{stats.total} levels
                 </span>
               </p>
             </div>
           </div>
-          <p className="mt-1.5 line-clamp-1 text-[11px] font-bold leading-snug text-[#0B3D91]/70 sm:text-xs">
+          <p className="mt-1.5 line-clamp-1 text-xs font-extrabold leading-snug text-[#0B3D91] sm:text-sm">
             {ocean.tagline}
           </p>
           <div
@@ -159,170 +160,179 @@ function LevelSelectPage() {
         </div>
       </header>
 
-      <div className="relative z-10 mx-auto grid min-h-0 w-full max-w-5xl flex-1 grid-cols-3 content-start gap-2 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:grid-cols-3 sm:gap-3 sm:px-6 lg:grid-cols-6">
+      <div className={`relative z-10 mx-auto flex min-h-0 w-full max-w-6xl flex-1 items-stretch gap-3 pb-[max(1rem,env(safe-area-inset-bottom))] ${PAGE_HEADER_PAD}`}>
+        <aside className="relative min-h-0 w-[min(36vw,400px)] min-w-[150px] shrink-0 overflow-hidden rounded-[1.4rem] border-4 border-white"
+          style={{ boxShadow: "0 14px 28px rgba(0,30,70,0.22)" }}
+        >
+          <img
+            src={ocean.map}
+            alt={`${ocean.name} cartoon map`}
+            className="absolute inset-0 h-full w-full object-cover"
+            draggable={false}
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#061846]/70 to-transparent px-3 pb-3 pt-10"
+          >
+            <span
+              className="inline-flex rounded-full border-2 border-white px-3 py-0.5 text-xs font-extrabold uppercase tracking-wide text-white"
+              style={{
+                fontFamily: '"Baloo 2", sans-serif',
+                background: "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)",
+                boxShadow: "0 3px 0 #062A66",
+              }}
+            >
+              {ocean.name}
+            </span>
+          </div>
+        </aside>
+
+        <div className="grid min-h-0 min-w-0 flex-1 grid-cols-3 grid-rows-2 gap-2 overflow-hidden sm:gap-2.5">
         {levels.map((level) => {
           const locked = !level.unlocked;
           const isBonus = level.isSpeedChallenge || level.isFriendsMatch;
+          const status = level.progress.completed ? "done" : locked ? "locked" : "ready";
           const card = (
             <div
-              className="relative overflow-hidden rounded-lg border-2 p-2.5 text-center sm:rounded-xl sm:p-3"
+              className="flex h-full min-h-0 flex-col rounded-2xl border-[3px] px-2 py-1.5 text-center sm:px-2.5 sm:py-2"
               style={{
-                background: "linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(176,226,255,0.78) 100%)",
+                background: "linear-gradient(180deg, #FFFFFF 0%, #F3FBFF 100%)",
                 borderColor: "#FFFFFF",
-                boxShadow:
-                  "0 8px 18px rgba(0,30,70,0.18), inset 0 2px 0 rgba(255,255,255,0.85)",
-                filter: locked ? "grayscale(0.4)" : undefined,
+                boxShadow: "0 8px 16px rgba(0,30,70,0.18)",
+                opacity: locked ? 0.88 : 1,
               }}
             >
-              <div
-                className="absolute inset-x-0 top-0 h-2"
-                style={{
-                  background: level.isFriendsMatch
-                    ? "linear-gradient(90deg, #5ED4FF 0%, #FFE566 50%, #FFB347 100%)"
-                    : level.isSpeedChallenge
-                      ? "linear-gradient(90deg, #F06A12 0%, #FFB347 45%, #FFE566 100%)"
-                      : `linear-gradient(90deg, ${ocean.accent} 0%, #5ED4FF 50%, #FFE566 100%)`,
-                }}
-              />
-
-              <div className="flex items-start justify-between gap-1">
+              <div className="flex shrink-0 items-center justify-between gap-1">
                 <div
-                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white font-display text-sm font-black text-white sm:h-9 sm:w-9"
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-white text-sm font-black text-white sm:h-8 sm:w-8 sm:text-base"
                   style={{
-                    background: level.isFriendsMatch
-                      ? "linear-gradient(180deg, #FFE566 0%, #FFB347 100%)"
-                      : level.isSpeedChallenge
-                        ? "linear-gradient(180deg, #FFB347 0%, #F06A12 100%)"
-                        : "linear-gradient(180deg, #5ED4FF 0%, #1A8FD4 100%)",
-                    boxShadow: isBonus ? "0 3px 0 #C44A10" : "0 3px 0 #0E5A9A",
-                    color: level.isFriendsMatch ? "#0B3D91" : undefined,
+                    background: isBonus
+                      ? "linear-gradient(180deg, #FFB347 0%, #F06A12 100%)"
+                      : "linear-gradient(180deg, #3EC6F5 0%, #0E6FBE 100%)",
+                    boxShadow: "0 2px 0 #0E5A9A",
+                    fontFamily: '"Baloo 2", sans-serif',
                   }}
                 >
                   {level.isFriendsMatch ? (
-                    <Heart className="h-4 w-4" fill="currentColor" />
+                    <Heart className="h-3.5 w-3.5" fill="currentColor" />
                   ) : level.isSpeedChallenge ? (
-                    <Zap className="h-4 w-4" />
+                    <Zap className="h-3.5 w-3.5" />
                   ) : (
                     level.localNumber
                   )}
                 </div>
-                <div className="flex items-center gap-0.5">
+                <div className="flex shrink-0 items-center gap-0.5">
                   {[1, 2, 3].map((s) => (
                     <Star
                       key={s}
                       className="h-3.5 w-3.5"
+                      strokeWidth={2.4}
                       style={{
-                        color: s <= level.progress.stars ? "#FFE566" : "rgba(94,212,255,0.35)",
-                        fill: s <= level.progress.stars ? "#FFE566" : "transparent",
+                        color: s <= level.progress.stars ? "#E6A800" : "#8AA4C2",
+                        fill: s <= level.progress.stars ? "#FFD24A" : "transparent",
                       }}
                     />
                   ))}
                 </div>
               </div>
 
-              <h3
-                className="mt-1.5 truncate text-sm font-extrabold uppercase text-[#0B3D91] sm:text-base"
+              <p
+                className="mt-1 shrink-0 text-[13px] font-extrabold leading-none text-[#0B3D91] sm:text-sm"
                 style={{ fontFamily: '"Baloo 2", sans-serif' }}
               >
-                {level.isFriendsMatch ? "Ocean Friends" : level.title}
-              </h3>
-              <p className="text-[10px] font-bold uppercase tracking-wide sm:text-[11px]" style={{ color: "#5ED4FF" }}>
-                {level.fishIds.length} fish
-                {level.isSpeedChallenge ? " · timed" : level.isFriendsMatch ? " · bonus" : ""}
+                {level.fishIds.length} Fish
               </p>
 
               <div
-                className="mt-1.5 flex h-12 items-end justify-center rounded-md border sm:h-14 sm:rounded-lg"
+                className="relative mt-1 flex min-h-0 flex-1 items-center justify-center rounded-xl border-2"
                 style={{
-                  background: "rgba(4,18,55,0.55)",
-                  borderColor: "rgba(94,212,255,0.4)",
+                  background: "linear-gradient(180deg, #E8F7FF 0%, #D4EEFF 100%)",
+                  borderColor: "#C5E6FA",
                 }}
               >
-                {level.previewFish.slice(0, 3).map((f, fi) => (
-                  <img
+                {level.previewFish.slice(0, 2).map((f, fi) => (
+                  <KnockoutImg
                     key={f.id}
                     src={f.img}
                     alt=""
-                    className="object-contain drop-shadow-md"
-                    style={{
-                      width: 40 - fi * 2,
-                      height: 40 - fi * 2,
-                      marginLeft: fi === 0 ? 0 : -12,
-                      zIndex: 3 - fi,
-                    }}
+                    className="h-[72%] max-h-10 w-auto object-contain"
+                    style={{ marginLeft: fi === 0 ? 0 : -8, zIndex: 2 - fi }}
                     draggable={false}
                   />
                 ))}
-                {level.previewFish.length > 3 && (
+                {level.previewFish.length > 2 && (
                   <span
-                    className="mb-1 ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-bold text-white"
-                    style={{ background: "rgba(6,24,70,0.65)" }}
+                    className="ml-1 rounded-full bg-white px-1.5 py-0.5 text-[10px] font-extrabold text-[#0B3D91]"
+                    style={{ fontFamily: '"Baloo 2", sans-serif' }}
                   >
-                    +{level.previewFish.length - 3}
+                    +{level.previewFish.length - 2}
+                  </span>
+                )}
+                {locked && (
+                  <span
+                    className="absolute inset-0 flex items-center justify-center rounded-xl"
+                    style={{ background: "rgba(11,61,145,0.28)" }}
+                  >
+                    <span
+                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white"
+                      style={{
+                        background: "linear-gradient(180deg, #FFB347 0%, #F06A12 100%)",
+                        boxShadow: "0 2px 0 #C44A10",
+                      }}
+                    >
+                      <Lock className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+                    </span>
                   </span>
                 )}
               </div>
 
-              <div className="mt-1.5 flex flex-wrap items-center justify-center gap-1 text-[10px] font-bold text-white">
-                {level.progress.completed ? (
-                  <span
-                    className="inline-flex items-center gap-0.5 rounded-full border border-white/40 px-1.5 py-0.5"
-                    style={{ background: "rgba(46,196,241,0.35)" }}
-                  >
-                    <CheckCircle2 className="h-3 w-3" style={{ color: "#5ED4FF" }} /> Done
+              <div
+                className="mt-1.5 flex h-7 w-full shrink-0 items-center justify-center rounded-full border-2 border-white text-xs font-extrabold text-white sm:h-8 sm:text-sm"
+                style={{
+                  fontFamily: '"Baloo 2", sans-serif',
+                  background:
+                    status === "done"
+                      ? "linear-gradient(180deg, #4ADE80 0%, #16A34A 100%)"
+                      : status === "locked"
+                        ? "linear-gradient(180deg, #94A3B8 0%, #475569 100%)"
+                        : "linear-gradient(180deg, #FFB347 0%, #F06A12 100%)",
+                  boxShadow: status === "done" ? "0 2px 0 #15803D" : status === "locked" ? "0 2px 0 #334155" : "0 2px 0 #C44A10",
+                }}
+              >
+                {status === "done" ? (
+                  <span className="inline-flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Done
                   </span>
-                ) : locked ? (
-                  <span
-                    className="inline-flex items-center gap-0.5 rounded-full border px-1.5 py-0.5"
-                    style={{ background: "rgba(6,24,70,0.55)", borderColor: "rgba(94,212,255,0.35)" }}
-                  >
-                    <Lock className="h-3 w-3" /> Locked
+                ) : status === "locked" ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Lock className="h-3.5 w-3.5" /> Locked
                   </span>
                 ) : (
-                  <span
-                    className="rounded-full border border-white/50 px-1.5 py-0.5"
-                    style={{ background: "linear-gradient(180deg, #FFB347, #F06A12)" }}
-                  >
-                    Ready
-                  </span>
+                  "Play"
                 )}
-                <span
-                  className="rounded-full border px-1.5 py-0.5"
-                  style={{ background: "rgba(6,24,70,0.55)", borderColor: "rgba(94,212,255,0.35)" }}
-                >
-                  Best {level.progress.highScore}
-                </span>
               </div>
-
-              {locked && (
-                <div className="absolute inset-0 flex items-center justify-center bg-[#061846]/40 backdrop-blur-[1px]">
-                  <div
-                    className="flex h-10 w-10 items-center justify-center rounded-full border-[3px] border-white"
-                    style={{
-                      background: "linear-gradient(180deg, #FFB347 0%, #F06A12 100%)",
-                      boxShadow: "0 4px 0 #C44A10",
-                    }}
-                  >
-                    <Lock className="h-4 w-4 text-white" strokeWidth={3} />
-                  </div>
-                </div>
-              )}
+              <p
+                className="mt-0.5 shrink-0 text-[11px] font-extrabold leading-none text-[#0B3D91] sm:text-xs"
+                style={{ fontFamily: '"Baloo 2", sans-serif' }}
+              >
+                Best {level.progress.highScore}
+              </p>
             </div>
           );
 
-          if (locked) return <div key={level.id}>{card}</div>;
+          if (locked) return <div key={level.id} className="min-h-0">{card}</div>;
 
           return (
             <Link
               key={level.id}
               to="/ocean/$oceanId/level/$levelId"
               params={{ oceanId: ocean.id, levelId: level.id }}
-              className="block transition-transform active:scale-[0.98]"
+              className="block h-full min-h-0 transition-transform active:scale-[0.98]"
             >
               {card}
             </Link>
           );
         })}
+        </div>
       </div>
 
       {showCelebration && (

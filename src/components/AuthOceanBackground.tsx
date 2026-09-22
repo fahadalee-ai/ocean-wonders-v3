@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import sceneReef from "@/assets/scene-reef.jpg";
+import sceneReef from "@/assets/new-bg.jpg";
 import char1 from "@/assets/Characters_1.png";
-import char2 from "@/assets/Characters_2.png";
+import char2 from "@/assets/new/Clownfish.png";
 import char3 from "@/assets/Characters_3.png";
 import char4 from "@/assets/Characters_4.png";
 import char5 from "@/assets/Characters_5.png";

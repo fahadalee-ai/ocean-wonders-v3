@@ -251,8 +251,8 @@ function GameHeader({
   extra?: React.ReactNode;
 }) {
   return (
-    <header className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(0.5rem,env(safe-area-inset-top))] sm:gap-3 ${PAGE_HEADER_PAD}`}>
-      <BackButton onClick={onBack} label="Back" />
+    <header className={`relative z-[80] flex shrink-0 items-center gap-2 pt-[max(1.35rem,calc(env(safe-area-inset-top)+0.35rem))] sm:gap-3 ${PAGE_HEADER_PAD}`}>
+      <BackButton size="sm" onClick={onBack} label="Back" />
 
       <div
         className="flex min-w-0 flex-1 items-center gap-2 rounded-2xl border-2 px-2.5 py-2 sm:rounded-3xl sm:px-3.5 sm:py-2.5"
@@ -327,6 +327,7 @@ function GameHeader({
 
       {onTogglePause && (
         <RoundIconButton
+          size="sm"
           variant="blue"
           label={paused ? "Resume" : "Pause"}
           onClick={(e) => {
@@ -336,9 +337,9 @@ function GameHeader({
           }}
         >
           {paused ? (
-            <Play className="h-6 w-6 text-white sm:h-7 sm:w-7" fill="currentColor" strokeWidth={2.5} />
+            <Play className="h-4 w-4 text-white" fill="currentColor" strokeWidth={2.5} />
           ) : (
-            <Pause className="h-6 w-6 text-white sm:h-7 sm:w-7" strokeWidth={2.5} />
+            <Pause className="h-4 w-4 text-white" strokeWidth={2.5} />
           )}
         </RoundIconButton>
       )}

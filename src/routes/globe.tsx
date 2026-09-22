@@ -4,10 +4,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, HelpCircle, Settings, Star, Trophy, Waves } from "lucide-react";
 import kidBoy from "@/assets/kid-diver-boy.png";
 import kidGirl from "@/assets/kid-diver-girl.png";
-import sceneReef from "@/assets/scene-reef.jpg";
 import { OCEANS, TOTAL_LEVELS } from "@/data/oceans";
 import { COPY } from "@/data/content";
-import { AuthOceanBackground } from "@/components/AuthOceanBackground";
 import { GoldTitle } from "@/components/ChunkyTitle";
 import { GlossyButton } from "@/components/GlossyButton";
 import { KnockoutImg } from "@/components/KnockoutImg";
@@ -63,8 +61,13 @@ function OceanSelectPage() {
   }
 
   return (
-    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#1E8BC8" }}>
-      <AuthOceanBackground fishCount={0} />
+    <main className="relative flex h-dvh flex-col overflow-hidden" style={{ backgroundColor: "#3EB6F2" }}>
+      <OceanWorldMap
+        selectedId={selectedId}
+        rippleKey={rippleKey}
+        oceanStats={oceanStats}
+        onPick={handlePick}
+      />
 
       <span
         className="absolute right-5 top-[max(0.55rem,env(safe-area-inset-top))] z-30 rounded-full border-2 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white sm:right-6 sm:text-xs"
@@ -78,39 +81,18 @@ function OceanSelectPage() {
         {COPY.ageRange}
       </span>
 
-      <div className="relative z-20 flex shrink-0 flex-col items-center px-16 pb-2 pt-[max(0.45rem,env(safe-area-inset-top))]">
+      <div className="pointer-events-none relative z-20 flex shrink-0 flex-col items-center px-16 pb-0 pt-[max(0.35rem,env(safe-area-inset-top))]">
         <motion.div
           initial={{ opacity: 0, y: -10, scale: 0.92 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ type: "spring", stiffness: 380, damping: 18 }}
-          className="flex flex-col items-center"
         >
           <GoldTitle text={COPY.exploreTitle} size="sm" />
-          <span
-            className="mt-2 rounded-full border-[3px] px-4 py-0.5 text-[11px] font-extrabold uppercase tracking-wider text-white sm:text-sm"
-            style={{
-              fontFamily: '"Baloo 2", sans-serif',
-              background: "linear-gradient(180deg, #1A5FB4 0%, #0B3D91 100%)",
-              borderColor: "#FFFFFF",
-              boxShadow: "0 4px 0 #062A66, 0 8px 14px rgba(0,20,60,0.25)",
-            }}
-          >
-            {COPY.selectOcean}
-          </span>
         </motion.div>
       </div>
 
-      <div className="relative z-20 flex min-h-0 flex-1 items-center justify-center px-[max(5.25rem,11vw)] pb-[5.6rem] pt-2">
-        <OceanWorldMap
-          selectedId={selectedId}
-          rippleKey={rippleKey}
-          oceanStats={oceanStats}
-          onPick={handlePick}
-        />
-      </div>
-
       <motion.div
-        className="pointer-events-none absolute bottom-[max(4.6rem,calc(env(safe-area-inset-bottom)+3.1rem))] left-5 z-[8] w-[min(18vw,168px)]"
+        className="pointer-events-none absolute bottom-[max(3.4rem,calc(env(safe-area-inset-bottom)+2.2rem))] left-3 z-[2] w-[min(11vw,100px)]"
         initial={{ opacity: 0, x: -24 }}
         animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
         transition={{
@@ -127,7 +109,7 @@ function OceanSelectPage() {
         />
       </motion.div>
       <motion.div
-        className="pointer-events-none absolute bottom-[max(4.6rem,calc(env(safe-area-inset-bottom)+3.1rem))] right-5 z-[8] w-[min(18vw,168px)] -scale-x-100"
+        className="pointer-events-none absolute bottom-[max(3.4rem,calc(env(safe-area-inset-bottom)+2.2rem))] right-3 z-[2] w-[min(11vw,100px)] -scale-x-100"
         initial={{ opacity: 0, x: 24 }}
         animate={{ opacity: 1, x: 0, y: [0, -7, 0] }}
         transition={{
@@ -143,22 +125,6 @@ function OceanSelectPage() {
           draggable={false}
         />
       </motion.div>
-
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[12] h-[26%] overflow-hidden"
-        aria-hidden
-        style={{
-          WebkitMaskImage: "linear-gradient(to top, #000 42%, transparent 100%)",
-          maskImage: "linear-gradient(to top, #000 42%, transparent 100%)",
-        }}
-      >
-        <img
-          src={sceneReef}
-          alt=""
-          className="absolute bottom-0 left-0 h-[380%] w-full object-cover object-bottom"
-          draggable={false}
-        />
-      </div>
 
       <div className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-5 z-30">
         <GlossyButton

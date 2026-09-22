@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 
 export type RoundIconVariant = "orange" | "blue";
+export type RoundIconSize = "sm" | "md";
 
 const VARIANT_STYLE: Record<RoundIconVariant, CSSProperties> = {
   orange: {
@@ -15,12 +16,23 @@ const VARIANT_STYLE: Record<RoundIconVariant, CSSProperties> = {
   },
 };
 
+const SIZE_CLASS: Record<RoundIconSize, string> = {
+  sm: "h-8 w-8 border-2 sm:h-9 sm:w-9",
+  md: "h-12 w-12 border-[3px] sm:h-14 sm:w-14",
+};
+
+const ICON_CLASS: Record<RoundIconSize, string> = {
+  sm: "h-4 w-4 sm:h-[1.1rem] sm:w-[1.1rem]",
+  md: "h-6 w-6 sm:h-7 sm:w-7",
+};
+
 const BASE_CLASS =
-  "z-[90] inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[3px] border-white " +
-  "transition-transform active:translate-y-[1px] active:scale-95 sm:h-14 sm:w-14";
+  "z-[90] inline-flex shrink-0 items-center justify-center rounded-full border-white " +
+  "transition-transform active:translate-y-[1px] active:scale-95";
 
 type RoundProps = {
   variant?: RoundIconVariant;
+  size?: RoundIconSize;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   label: string;
   className?: string;
@@ -30,6 +42,7 @@ type RoundProps = {
 /** Glossy round icon control (pause, etc.) — same shape as BackButton. */
 export function RoundIconButton({
   variant = "orange",
+  size = "md",
   onClick,
   label,
   className = "",
@@ -40,7 +53,7 @@ export function RoundIconButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className={`${BASE_CLASS} ${className}`.trim()}
+      className={`${BASE_CLASS} ${SIZE_CLASS[size]} ${className}`.trim()}
       style={VARIANT_STYLE[variant]}
     >
       {children}
@@ -53,12 +66,13 @@ type BackProps = {
   onClick?: () => void;
   label?: string;
   className?: string;
+  size?: RoundIconSize;
 };
 
 /** Shared orange glossy back control — same style as Ocean level select. */
-export function BackButton({ to, onClick, label = "Back", className = "" }: BackProps) {
-  const cls = `${BASE_CLASS} ${className}`.trim();
-  const icon = <ArrowLeft className="h-6 w-6 text-white sm:h-7 sm:w-7" strokeWidth={3.5} />;
+export function BackButton({ to, onClick, label = "Back", className = "", size = "md" }: BackProps) {
+  const cls = `${BASE_CLASS} ${SIZE_CLASS[size]} ${className}`.trim();
+  const icon = <ArrowLeft className={`${ICON_CLASS[size]} text-white`} strokeWidth={3.5} />;
 
   if (to) {
     return (
